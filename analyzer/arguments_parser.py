@@ -1,0 +1,53 @@
+"""
+This module implements reading arguments from the command line. Also this module specifies default paths to files
+located in the root directory.
+"""
+
+from argparse import ArgumentParser
+from os.path import dirname, join
+
+PROJECT_ROOT = dirname(dirname(__file__))
+DATA_DIRECTORY = join(PROJECT_ROOT, 'data')
+PASSWORDS_FILE = join(DATA_DIRECTORY, 'rockyou.txt')
+FREQUENCY_FILE = join(DATA_DIRECTORY, 'frequency_words.txt')
+DESTINATION_FILE = join(PROJECT_ROOT, 'new_words.txt')
+
+
+def arguments_parser() -> ArgumentParser:
+    """
+    Define command line arguments which will be received by the program
+
+    :return: instance of ArgumentParser()
+    """
+    parser = ArgumentParser(prog='wordanalyzer',
+                            description='This program analyzes the source set of words was obtained from the file '
+                                        '(-s parameter), clear this set from incorrect symbols, split cleared words '
+                                        'to lexemes, then correct them by replacing assumed incorrect words to right '
+                                        'words and then will create new set of words and save it to the '
+                                        'destination file (-d parameter)',
+                            epilog='Lpshkn, 2020')
+
+    parser.add_argument('-s', '--source',
+                        help='the source file containing the set of words you need to analyze',
+                        default=PASSWORDS_FILE,
+                        type=str)
+
+    parser.add_argument('-f', '--frequency',
+                        help="the dictionary ordered by frequency of word usage, which will be used to perform the "
+                             "splitting text and correcting incorrect words (if the dictionary parameter -w isn't "
+                             "override)",
+                        default=FREQUENCY_FILE,
+                        type=str)
+
+    parser.add_argument('-d', '--destination',
+                        help="the destination file where the processed set of source words will be saved",
+                        default=DESTINATION_FILE,
+                        type=str)
+
+    parser.add_argument('-w', '--words-dictionary',
+                        help="the dictionary which will be used to perform correcting incorrect words (by default, "
+                             "the same file as in -f parameter)",
+                        default=FREQUENCY_FILE,
+                        type=str)
+
+    return parser
