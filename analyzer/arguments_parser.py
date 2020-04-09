@@ -50,4 +50,8 @@ def arguments_parser() -> ArgumentParser:
                         default=FREQUENCY_FILE,
                         type=str)
 
+    parser.add_argument('-c', '--count',
+                        help="count of words which will be processed (set of words will be selected randomly)",
+                        type=int)
+
     return parser
