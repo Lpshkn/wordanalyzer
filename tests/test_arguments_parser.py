@@ -2,7 +2,7 @@
 Tests for analyzer/arguments_parser.py module
 """
 import unittest
-import analyzer.arguments_parser as ap
+import arguments_parser as ap
 
 
 class ArgumentsParserTest(unittest.TestCase):
