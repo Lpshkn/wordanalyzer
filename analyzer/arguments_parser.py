@@ -47,7 +47,6 @@ def arguments_parser() -> ArgumentParser:
     parser.add_argument('-w', '--words-dictionary',
                         help="the dictionary which will be used to perform correcting incorrect words (by default, "
                              "the same file as in -f parameter)",
-                        default=FREQUENCY_FILE,
                         type=str)
 
     parser.add_argument('-c', '--count',
