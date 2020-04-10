@@ -7,8 +7,9 @@ from random import sample
 from os import stat
 
 
-def load_words(words_filename: str, count: int = None) -> list:
+def load_words(words_filename: str, count: int = None, encoding: str = 'utf-8') -> list:
     """
+    :param encoding: encoding of the file
     :param words_filename: str - filename
     :param count: int - count of words which will be processed
     :return: list(str) - list of loaded words
@@ -23,7 +24,7 @@ def load_words(words_filename: str, count: int = None) -> list:
     if count == 0:
         raise ValueError("Count can't be 0")
 
-    with codecs.open(words_filename, 'r', 'ANSI') as f:
+    with codecs.open(words_filename, 'r', encoding) as f:
         data = f.read().splitlines()
 
     return sample(data, count) if count is not None else data
