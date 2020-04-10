@@ -1,5 +1,5 @@
 """
-Tests for load_data.py module
+Tests for analyzer/load_data.py module
 """
 
 import unittest
@@ -31,7 +31,11 @@ class LoadDataTest(unittest.TestCase):
         # If type is incorrect
         with self.assertRaises(TypeError):
             load_words(words_filename=None)
+
+        with self.assertRaises(TypeError):
             load_words(words_filename=[])
+
+        with self.assertRaises(TypeError):
             load_words(words_filename=1)
 
         # Check empty file
@@ -42,6 +46,7 @@ class LoadDataTest(unittest.TestCase):
         # If count is incorrect (1 <= count <= n)
         with self.assertRaises(ValueError):
             load_words(self.filename, self.count + 1)
+        with self.assertRaises(ValueError):
             load_words(self.filename, -1)
 
         with self.assertRaises(TypeError):
@@ -63,7 +68,3 @@ class LoadDataTest(unittest.TestCase):
     def tearDown(self) -> None:
         os.remove(self.filename)
         os.remove(self.empty_file)
-
-
-if __name__ == '__main__':
-    unittest.main()
