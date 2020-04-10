@@ -1,10 +1,27 @@
-import sys
-from analyzer.arguments_parser import arguments_parser
+"""
+This module provides WordAnalyzer class that is a wrapper for words dictionary and any functions for
+working with them.
+"""
+
+from math import log
+import wordninja
 
 
-def main():
-    args = arguments_parser().parse_args(sys.argv[1:])
+class WordAnalyzer:
+    def __init__(self, words: list, frequency_words: list):
+        # Words' cost calculated by Zipf's law
+        self.word_cost = dict((k, log((i + 1) * log(len(words)))) for i, k in enumerate(words))
 
+        self.words = words
+        self.frequency_words = frequency_words
 
-if __name__ == '__main__':
-    main()
+        # If the word isn't in the dictionary, then its cost is default_cost
+        self.default_cost = 100
+
+    def get_total_cost(self, text: str) -> int:
+        """
+        Calculate total cost of the text based on cost of the each word
+        :param text: the text without spaces
+        :return: total sum of costs
+        """
+        return sum([self.word_cost.get(word, self.default_cost) for word in wordninja.split(text)])
