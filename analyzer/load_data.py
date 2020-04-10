@@ -14,6 +14,9 @@ def load_words(words_filename, count=None):
     :return: list(str) - list of loaded words
     """
 
+    if not isinstance(words_filename, str):
+        raise TypeError("That type isn't string!")
+
     if stat(words_filename).st_size == 0:
         raise EmptyFileError()
 
