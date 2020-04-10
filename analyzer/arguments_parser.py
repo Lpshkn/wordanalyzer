@@ -53,4 +53,9 @@ def arguments_parser() -> ArgumentParser:
                         help="count of words which will be processed (set of words will be selected randomly)",
                         type=int)
 
+    parser.add_argument('-e', '--encoding',
+                        help='encoding of the file',
+                        default='utf-8',
+                        type=str)
+
     return parser
