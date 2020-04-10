@@ -9,6 +9,11 @@ import wordninja
 
 class WordAnalyzer:
     def __init__(self, words: list, frequency_words: list):
+        """
+        :param words: list of words which you need to analyze
+        :param frequency_words: list of words ordered by frequency usage
+        """
+
         # Words' cost calculated by Zipf's law
         self.word_cost = dict((k, log((i + 1) * log(len(words)))) for i, k in enumerate(words))
 
