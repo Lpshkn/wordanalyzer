@@ -7,7 +7,7 @@ from random import sample
 from os import stat
 
 
-def load_words(words_filename, count=None):
+def load_words(words_filename: str, count: int = None) -> list:
     """
     :param words_filename: str - filename
     :param count: int - count of words which will be processed
