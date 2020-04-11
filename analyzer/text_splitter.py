@@ -12,6 +12,14 @@ class TextSplitter:
         :param words: the list of words is ordered by frequency usage
         """
 
+        # Check that list is not empty or None
+        if words == [] or words is None:
+            raise ValueError("The list of words is empty or None")
+
+        # It's necessary the each element is str type in the list
+        if not all(isinstance(word, str) for word in words):
+            raise TypeError("The list of words has a non string type element")
+
         # Build a cost dictionary, assuming Zipf's law
         self.word_cost = dict((word, log((number + 1) * log(len(words)))) for number, word in enumerate(words))
         self.max_len = max(len(x) for x in words)
