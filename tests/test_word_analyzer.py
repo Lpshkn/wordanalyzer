@@ -2,7 +2,6 @@
 Tests for analyzer/word_analyzer.py module
 """
 import unittest
-import wordninja
 from word_analyzer import WordAnalyzer
 from math import log
 
