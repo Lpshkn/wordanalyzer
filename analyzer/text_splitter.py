@@ -31,6 +31,10 @@ class TextSplitter:
         :return: list of split words
         """
 
+        # It was decided that it's necessary to deliberately refuse to check for incorrect characters in the
+        # text to increase performance. Also, this check must be performed before passing the text to the
+        # function as intended by the author.
+
         # Find the best match for the i first characters, assuming cost has
         # been built for the i-1 first characters.
         # Returns a pair (match_cost, match_length).
