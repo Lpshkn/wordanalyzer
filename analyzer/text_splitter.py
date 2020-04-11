@@ -24,7 +24,7 @@ class TextSplitter:
         self.word_cost = dict((word, log((number + 1) * log(len(words)))) for number, word in enumerate(words))
         self.max_len = max(len(x) for x in words)
 
-    def split(self, text):
+    def split(self, text: str):
         """
         Split the text without spaces. Returns array of split words
         :param text: text you need to split
@@ -34,6 +34,9 @@ class TextSplitter:
         # It was decided that it's necessary to deliberately refuse to check for incorrect characters in the
         # text to increase performance. Also, this check must be performed before passing the text to the
         # function as intended by the author.
+
+        if not isinstance(text, str):
+            raise TypeError("Text must be str type")
 
         # Find the best match for the i first characters, assuming cost has
         # been built for the i-1 first characters.
