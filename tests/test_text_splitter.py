@@ -2,7 +2,7 @@
 Tests for analyzer/text_splitter.py module
 """
 import unittest
-from text_splitter import TextSplitter
+from analyzer.text_splitter import TextSplitter
 from math import log
 
 

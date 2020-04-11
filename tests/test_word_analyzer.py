@@ -2,7 +2,7 @@
 Tests for analyzer/word_analyzer.py module
 """
 import unittest
-from word_analyzer import WordAnalyzer
+from analyzer.word_analyzer import WordAnalyzer
 from math import log
 
 
@@ -37,7 +37,8 @@ class WordAnalyzerTest(unittest.TestCase):
 
     def test_correct_total_cost(self):
         text = 'onetwothreefour'
-        sum_cost = sum([self.word_cost.get(word, self.word_analyzer.default_cost) for word in wordninja.split(text)])
+        sum_cost = sum([self.word_cost.get(word, self.word_analyzer.default_cost) for word in
+                        self.word_analyzer.splitter.split(text)])
 
         self.assertEqual(self.word_analyzer.get_total_cost(text), sum_cost)
         # 'six' will be split to 3 letters

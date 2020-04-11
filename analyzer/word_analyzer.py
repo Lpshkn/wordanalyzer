@@ -4,7 +4,7 @@ working with them.
 """
 
 from math import log
-from text_splitter import TextSplitter
+from .text_splitter import TextSplitter
 
 
 class WordAnalyzer:
