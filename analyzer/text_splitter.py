@@ -7,11 +7,22 @@ from math import log
 
 class TextSplitter:
     def __init__(self, words: list):
+        """
+        Builds words cost dictionary using the list of words passed to constructor
+        :param words: the list of words is ordered by frequency usage
+        """
+
         # Build a cost dictionary, assuming Zipf's law
         self.word_cost = dict((word, log((number + 1) * log(len(words)))) for number, word in enumerate(words))
         self.max_len = max(len(x) for x in words)
 
     def split(self, text):
+        """
+        Split the text without spaces. Returns array of split words
+        :param text: text you need to split
+        :return: list of split words
+        """
+
         # Find the best match for the i first characters, assuming cost has
         # been built for the i-1 first characters.
         # Returns a pair (match_cost, match_length).
