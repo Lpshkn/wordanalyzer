@@ -47,7 +47,7 @@ def get_indices_incorrect_symbols(word: str) -> list:
     arr = []
     index = 0
     for char in re.findall(r'[\W\d\s]', word):
-        index = word.index(char, __start=index)
+        index = word.index(char, index)
         arr.append(index)
         index += 1
 
