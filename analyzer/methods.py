@@ -3,6 +3,7 @@ This module contains functions for processing string, clearing from incorrect sy
 """
 
 import re
+from itertools import combinations
 
 
 def leet_transform(word: str, indices: list) -> str:
@@ -52,3 +53,17 @@ def get_indices_incorrect_symbols(word: str) -> list:
         index += 1
 
     return arr
+
+
+def get_all_combinations(indices: list) -> list:
+    """
+    Function returns all possible combinations of passed indices
+    :param indices: list of indices
+    :return: list containing all combinations of indices
+    """
+
+    all_combinations = []
+    for i in range(1, len(indices) + 1):
+        all_combinations.extend(combinations(indices, i))
+
+    return all_combinations
