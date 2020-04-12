@@ -53,7 +53,10 @@ class WordAnalyzer:
 
     def get_clear_word(self, word):
         """
-        This function
+        This function iterates through all possible combinations of indices, which were obtained from
+        get_indices_incorrect_symbols and the call to the get_all_combinations function.
+        Function returns the cheapest found word among all these combinations.
+
         :param word: word that will be cleared
         :return: the cheapest cleared word
         """
