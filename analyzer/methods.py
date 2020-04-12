@@ -35,3 +35,20 @@ def leet_transform(word: str, indices: list) -> str:
 
     # Remove all incorrect symbols
     return re.sub(r'[\W\d\s_]+', r'', word)
+
+
+def get_indices_incorrect_symbols(word: str) -> list:
+    """
+    Function returns the list of all indices incorrect characters in the passed word
+    :param word: the passed word in which you need to find indices
+    :return: list of found indices
+    """
+
+    arr = []
+    index = 0
+    for char in re.findall(r'[\W\d\s]', word):
+        index = word.index(char, __start=index)
+        arr.append(index)
+        index += 1
+
+    return arr
