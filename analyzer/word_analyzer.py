@@ -84,26 +84,31 @@ class WordAnalyzer:
 
         return cleared_word[1]
 
-    def build_bk_tree(self, filename: str) -> bk.BKTree:
+    def build_bk_tree(self, filename: str = None) -> bk.BKTree:
         """
         This function builds the BK-tree based on frequency words. If bk-tree is already saved in the file,
-        it will be loaded and returned. BK-tree builds based on Damerau's distance.
+        it will be loaded and returned, if filename was passed. BK-tree builds based on Damerau's distance.
 
         :param filename: the file where the tree will be saved or from will be loaded
         :return: built BK-tree
         """
 
-        if os.path.isfile(filename):
-            with open(filename, 'rb') as file:
-                tree = pickle.load(file)
-                if tree is not bk.BKTree:
-                    raise TypeError("Was loaded not bk-tree")
+        # If filename was passed, then the tree will either be loaded or will be built and saved.
+        # Else the tree will be build and just returned without saving
+        if filename:
+            if os.path.isfile(filename):
+                with open(filename, 'rb') as file:
+                    tree = pickle.load(file)
+
+                    if tree is not bk.BKTree:
+                        raise TypeError("Was loaded not bk-tree")
+
+                    return tree
+            else:
+                tree = bk.BKTree(Damerau().distance, self.frequency_words)
+                with open(filename, 'wb') as file:
+                    pickle.dump(tree, file)
 
                 return tree
-
         else:
-            tree = bk.BKTree(Damerau().distance, self.frequency_words)
-            with open(filename, 'wb') as file:
-                pickle.dump(tree, file)
-
-            return tree
+            return bk.BKTree(Damerau().distance, self.frequency_words)
