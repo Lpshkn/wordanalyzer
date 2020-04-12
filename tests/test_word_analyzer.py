@@ -2,6 +2,7 @@
 Tests for analyzer/word_analyzer.py module
 """
 import unittest
+import os
 from analyzer.word_analyzer import WordAnalyzer
 from math import log
 
@@ -74,3 +75,19 @@ class WordAnalyzerTest(unittest.TestCase):
             self.word_analyzer.get_clear_word([])
         with self.assertRaises(TypeError):
             self.word_analyzer.get_clear_word(42)
+
+    def test_build_bk_tree(self):
+        # test is empty file
+        with open('test', 'w'):
+            with self.assertRaises(ValueError):
+                self.word_analyzer.build_bk_tree('test')
+        os.remove('test')
+
+        # Check that the tree will be saved, i.e. file 'test' will be create
+        tree = self.word_analyzer.build_bk_tree('test')
+        self.assertTrue(os.path.isfile('test'))
+
+        # Now load the bk-tree from existed file 'test' and compare original tree and loaded tree
+        tree2 = self.word_analyzer.build_bk_tree('test')
+        self.assertEqual(tree.tree, tree2.tree)
+        os.remove('test')
