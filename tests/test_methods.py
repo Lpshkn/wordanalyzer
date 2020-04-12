@@ -43,6 +43,10 @@ class LeetTransformTest(unittest.TestCase):
 
 
 class GetIndicesIncorrectSymbolsTest(unittest.TestCase):
+    """
+    Tests for get_indices_incorrect_symbols function
+    """
+
     def test_correct_input(self):
         self.assertEqual(methods.get_indices_incorrect_symbols('!i@n#c$o%r^r&e*c(t)'),
                          [0, 2, 4, 6, 8, 10, 12, 14, 16, 18])
@@ -62,3 +66,22 @@ class GetIndicesIncorrectSymbolsTest(unittest.TestCase):
             methods.get_indices_incorrect_symbols(42)
         with self.assertRaises(TypeError):
             methods.get_indices_incorrect_symbols([])
+
+
+class GetAllCombinationsTest(unittest.TestCase):
+    """
+    Tests for get_all_combinations function
+    """
+    def test_correct_input(self):
+        self.assertEqual(methods.get_all_combinations([]), [])
+        self.assertEqual(methods.get_all_combinations([1, 2, 3]),
+                         [(1,), (2,), (3,), (1, 2), (1, 3), (2, 3), (1, 2, 3)])
+        self.assertEqual(methods.get_all_combinations([1]), [(1,)])
+
+    def test_incorrect_input(self):
+        with self.assertRaises(TypeError):
+            methods.get_all_combinations(None)
+        with self.assertRaises(TypeError):
+            methods.get_all_combinations([1, 'str'])
+        with self.assertRaises(TypeError):
+            methods.get_all_combinations(1)
