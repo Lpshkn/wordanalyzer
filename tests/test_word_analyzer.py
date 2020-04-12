@@ -53,3 +53,24 @@ class WordAnalyzerTest(unittest.TestCase):
             self.word_analyzer.get_total_cost(None)
         with self.assertRaises(TypeError):
             self.word_analyzer.get_total_cost(42)
+
+    def test_correct_clear_word(self):
+        # self.frequency_words used as a dictionary
+        # Remove incorrect symbols
+        self.assertEqual(self.word_analyzer.get_clear_word('one$two123'), 'onetwo')
+
+        # Replace leet symbols and remove incorrect
+        self.assertEqual(self.word_analyzer.get_clear_word('0n3f1v3@#$%'), 'onefive')
+        self.assertEqual(self.word_analyzer.get_clear_word(''), '')
+        self.assertEqual(self.word_analyzer.get_clear_word(' '), '')
+        self.assertEqual(self.word_analyzer.get_clear_word('12345'), '')
+        self.assertEqual(self.word_analyzer.get_clear_word('onetwothreefour'), 'onetwothreefour')
+        self.assertEqual(self.word_analyzer.get_clear_word('0one1two3th@re@ef$o^ur'), 'onetwothreefour')
+
+    def test_incorrect_clear_word(self):
+        with self.assertRaises(TypeError):
+            self.word_analyzer.get_clear_word(None)
+        with self.assertRaises(TypeError):
+            self.word_analyzer.get_clear_word([])
+        with self.assertRaises(TypeError):
+            self.word_analyzer.get_clear_word(42)
