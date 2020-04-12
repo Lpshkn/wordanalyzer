@@ -5,6 +5,7 @@ working with them.
 
 from math import log
 from .text_splitter import TextSplitter
+from .methods import (get_all_combinations, get_indices_incorrect_symbols, leet_transform)
 
 
 class WordAnalyzer:
@@ -49,3 +50,31 @@ class WordAnalyzer:
             raise TypeError("Text must be str type")
 
         return sum([self.word_cost.get(word, self.default_cost) for word in self.splitter.split(text)])
+
+    def get_clear_word(self, word):
+        """
+        This function
+        :param word: word that will be cleared
+        :return: the cheapest cleared word
+        """
+
+        # Get all indices of incorrect symbols
+        indices = get_indices_incorrect_symbols(word)
+        # Define the word which will be override
+        cleared_word = [9e999, '']
+        # Get all combinations of indices
+        all_combinations = get_all_combinations(indices)
+
+        # Define an empty combination. It's important in order to check the cost of the word without changes
+        all_combinations.append([])
+
+        # Find the cheapest cleared word among all the possible combinations of indices,
+        # which will be used to clear the word
+        for combinations in all_combinations:
+            prepared_str = leet_transform(word, combinations)
+
+            total_cost = self.get_total_cost(prepared_str.lower())
+            if total_cost < cleared_word[0]:
+                cleared_word = [total_cost, prepared_str]
+
+        return cleared_word[1]
