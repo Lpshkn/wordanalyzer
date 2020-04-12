@@ -3,13 +3,16 @@ This module provides WordAnalyzer class that is a wrapper for words dictionary a
 working with them.
 """
 
-from math import log
+import pickle
+import os
+import pybktree as bk
 from .text_splitter import TextSplitter
 from .methods import (get_all_combinations, get_indices_incorrect_symbols, leet_transform)
+from similarity.damerau import Damerau
 
 
 class WordAnalyzer:
-    def __init__(self, words: list, frequency_words: list):
+    def __init__(self, words: list, frequency_words: list, filename_tree: str):
         """
         :param words: list of words which you need to analyze
         :param frequency_words: list of words ordered by frequency usage
@@ -25,13 +28,15 @@ class WordAnalyzer:
         # It's necessary the each element is str type in the list
         if not all(isinstance(word, str) for word in words) or not \
                 all(isinstance(word, str) for word in frequency_words):
-
             raise TypeError("The list of words has a non string type element")
 
         self.words = words
         self.frequency_words = frequency_words
 
         self.splitter = TextSplitter(frequency_words)
+
+        # Build BK-tree for correcting words
+        self.tree = self.build_bk_tree(filename_tree)
 
         # If the word isn't in the dictionary, then its cost is default_cost
         self.default_cost = 100
@@ -78,3 +83,27 @@ class WordAnalyzer:
                 cleared_word = [total_cost, prepared_str]
 
         return cleared_word[1]
+
+    def build_bk_tree(self, filename: str) -> bk.BKTree:
+        """
+        This function builds the BK-tree based on frequency words. If bk-tree is already saved in the file,
+        it will be loaded and returned. BK-tree builds based on Damerau's distance.
+
+        :param filename: the file where the tree will be saved or from will be loaded
+        :return: built BK-tree
+        """
+
+        if os.path.isfile(filename):
+            with open(filename, 'rb') as file:
+                tree = pickle.load(file)
+                if tree is not bk.BKTree:
+                    raise TypeError("Was loaded not bk-tree")
+
+                return tree
+
+        else:
+            tree = bk.BKTree(Damerau().distance, self.frequency_words)
+            with open(filename, 'wb') as file:
+                pickle.dump(tree, file)
+
+            return tree
