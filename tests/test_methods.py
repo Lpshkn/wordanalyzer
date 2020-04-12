@@ -6,6 +6,9 @@ import analyzer.methods as methods
 
 
 class LeetTransformTest(unittest.TestCase):
+    """
+    Tests for leet_transform function
+    """
     def test_correct_input(self):
         # Replace all leet characters
         self.assertEqual(methods.leet_transform('Th1$is0nmyl3@p', [2, 3, 6, 11, 12]), 'Thisisonmyleap')
@@ -37,3 +40,25 @@ class LeetTransformTest(unittest.TestCase):
         # The symbol with index 3 doesn't exist
         with self.assertRaises(IndexError):
             methods.leet_transform('str', [3])
+
+
+class GetIndicesIncorrectSymbolsTest(unittest.TestCase):
+    def test_correct_input(self):
+        self.assertEqual(methods.get_indices_incorrect_symbols('!i@n#c$o%r^r&e*c(t)'),
+                         [0, 2, 4, 6, 8, 10, 12, 14, 16, 18])
+
+        # The are no incorrect characters
+        self.assertEqual(methods.get_indices_incorrect_symbols('correctword'), [])
+        self.assertEqual(methods.get_indices_incorrect_symbols(''), [])
+
+        # The are all symbols are incorrect
+        self.assertEqual(methods.get_indices_incorrect_symbols('1234567890_'), list(range(10)))
+        self.assertEqual(methods.get_indices_incorrect_symbols('`~!@#$%^&*()-+="№;%:?'), list(range(21)))
+
+    def test_incorrect_input(self):
+        with self.assertRaises(TypeError):
+            methods.get_indices_incorrect_symbols(None)
+        with self.assertRaises(TypeError):
+            methods.get_indices_incorrect_symbols(42)
+        with self.assertRaises(TypeError):
+            methods.get_indices_incorrect_symbols([])
