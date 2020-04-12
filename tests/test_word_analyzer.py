@@ -11,13 +11,13 @@ class WordAnalyzerTest(unittest.TestCase):
         self.words = ['one', 'two', 'three', 'four', 'five', 'six']
         self.frequency_words = ['three', 'two', 'five', 'one', 'four']
 
-        self.word_cost = dict((k, log((i + 1) * log(len(self.words)))) for i, k in enumerate(self.words))
+        self.word_cost = dict((k, log((i + 1) * log(len(self.frequency_words)))) for i, k in enumerate(self.frequency_words))
         self.word_analyzer = WordAnalyzer(self.words, self.frequency_words)
 
     def test_correct_constructor(self):
         self.assertEqual(self.frequency_words, self.word_analyzer.frequency_words)
         self.assertEqual(self.words, self.word_analyzer.words)
-        self.assertEqual(self.word_cost, self.word_analyzer.word_cost)
+        self.assertEqual(self.word_cost, self.word_analyzer.splitter.word_cost)
 
     def test_incorrect_constructor(self):
         with self.assertRaises(ValueError):

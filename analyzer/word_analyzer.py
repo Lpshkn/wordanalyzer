@@ -28,9 +28,6 @@ class WordAnalyzer:
 
             raise TypeError("The list of words has a non string type element")
 
-        # Words' cost calculated by Zipf's law
-        self.word_cost = dict((k, log((i + 1) * log(len(words)))) for i, k in enumerate(words))
-
         self.words = words
         self.frequency_words = frequency_words
 
@@ -49,7 +46,7 @@ class WordAnalyzer:
         if not isinstance(text, str):
             raise TypeError("Text must be str type")
 
-        return sum([self.word_cost.get(word, self.default_cost) for word in self.splitter.split(text)])
+        return sum([self.splitter.word_cost.get(word, self.default_cost) for word in self.splitter.split(text)])
 
     def get_clear_word(self, word):
         """
