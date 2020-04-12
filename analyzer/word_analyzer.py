@@ -12,7 +12,7 @@ from similarity.damerau import Damerau
 
 
 class WordAnalyzer:
-    def __init__(self, words: list, frequency_words: list, filename_tree: str):
+    def __init__(self, words: list, frequency_words: list, filename_tree: str = None):
         """
         :param words: list of words which you need to analyze
         :param frequency_words: list of words ordered by frequency usage
@@ -98,9 +98,12 @@ class WordAnalyzer:
         if filename:
             if os.path.isfile(filename):
                 with open(filename, 'rb') as file:
+                    if os.stat(filename).st_size == 0:
+                        raise ValueError("File is empty")
+
                     tree = pickle.load(file)
 
-                    if tree is not bk.BKTree:
+                    if not isinstance(tree, bk.BKTree):
                         raise TypeError("Was loaded not bk-tree")
 
                     return tree
