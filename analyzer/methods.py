@@ -62,6 +62,9 @@ def get_all_combinations(indices: list) -> list:
     :return: list containing all combinations of indices
     """
 
+    if not all(isinstance(index, int) for index in indices):
+        raise TypeError("The list of indices has a non int type element")
+
     all_combinations = []
     for i in range(1, len(indices) + 1):
         all_combinations.extend(combinations(indices, i))
