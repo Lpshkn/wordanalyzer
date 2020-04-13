@@ -58,4 +58,10 @@ def arguments_parser() -> ArgumentParser:
                         default='utf-8',
                         type=str)
 
+    parser.add_argument('-t', '--tree',
+                        help="filename, where the bk-tree will be saved or from will be loaded. If it specified and "
+                             "this file exists, then tree will be loaded from this file. Else if it specified, but "
+                             "doesn't exist, it will be built and saved to this file",
+                        type=str)
+
     return parser
