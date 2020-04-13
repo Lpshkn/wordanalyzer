@@ -48,9 +48,6 @@ class WordAnalyzer:
         :return: total sum of costs
         """
 
-        if not isinstance(text, str):
-            raise TypeError("Text must be str type")
-
         return sum([self.splitter.word_cost.get(word, self.default_cost) for word in self.splitter.split(text)])
 
     def get_clear_word(self, word):
@@ -134,3 +131,62 @@ class WordAnalyzer:
             return [it[1] for it in arr]
         else:
             return None
+
+    def get_correct_words(self, word: str, threshold=2, number_of_corrected_words=4) -> list:
+        """
+        This function clears passed word, then splits it to some parts and in turn splice these parts into one word,
+        trying to find the cheapest for each. How many parts will be spliced is determined by the threshold argument.
+        By changing threshold parameter, you can reach at an optimal correcting. After correcting many corrected
+        words will be returned. How many determined by number_of_corrected_words. You can change that parameter
+        in order to build optimal list of corrected words.
+
+        :param word: word that will be corrected
+        :param threshold: how many parts will be spliced
+        :param number_of_corrected_words: how many corrected words will be returned
+        :return: list of corrected words
+        """
+        minimum_parts = 2
+
+        word = self.get_clear_word(word)
+        parts = self.splitter.split(word)
+        evaluated_words = []
+
+        def replace_correcting_parts(parts: list, similar_words: list, indices: list) -> list:
+            """
+            This function receives parts - list of parts of a word. Some of these parts whose indices are passed as
+            third argument splice into one word and similar words to that word pass to this function.
+            Indices - indices of those parts of a word that were spliced into one. So, this function pastes
+            one of the similar words to the places indicated by indices, then that all splices with the rest
+            parts of a word and then it will be evaluated. The cost of the full spliced word with this word will be
+            appended into the list. The list containing all these similar spliced words with their cost
+            will be returned.
+
+            :param parts: list of parts of a word
+            :param similar_words: list of similar to a word which will be replaced
+            :param indices: indices of those parts of a word that were spliced into one
+            :return: list of (cost of full spliced word, this word)
+            """
+
+            i, j = indices
+            full_words_with_cost = []
+            for similar_word in similar_words:
+                full_word = ''.join(parts[:i] + [similar_word] + parts[j:])
+                cost = self.get_total_cost(full_word)
+                full_words_with_cost.append([cost, full_word])
+
+            return full_words_with_cost
+
+        for i in range(len(parts)):
+            # That value will decrease
+            max_range = threshold if threshold <= len(parts) - i else len(parts) - i
+
+            for j in range(i + minimum_parts, max_range + i + 1):
+                spliced_word = ''.join(parts[i:j])
+                similar_words = self.get_similar_words(spliced_word)
+
+                if similar_words:
+                    full_words = replace_correcting_parts(parts, similar_words, (i, j - 1))
+                    evaluated_words.extend(full_words)
+
+        arr = sorted(evaluated_words)[:number_of_corrected_words]
+        return [it[1] for it in arr]
