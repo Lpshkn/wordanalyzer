@@ -185,6 +185,13 @@ class WordAnalyzer:
 
             return full_words_with_cost
 
+        # If after splitting the count of parts isn't enough
+        if len(parts) < minimum_parts:
+            arr = []
+            for part in parts:
+                arr.extend(self.get_similar_words(part, number_similar_words=number_of_corrected_words))
+            return arr
+
         for i in range(len(parts)):
             # That value will decrease
             max_range = threshold if threshold <= len(parts) - i else len(parts) - i
@@ -200,18 +207,30 @@ class WordAnalyzer:
         arr = sorted(evaluated_words)[:number_of_corrected_words]
         return [it[1] for it in arr]
 
-    def set_number_similar_words(self, number: int) :
+    def set_number_similar_words(self, number: int):
+        if not isinstance(number, int):
+            raise TypeError("Number is not int")
+
         self.number_similar_words = number
         return self
 
     def set_distance(self, distance: int):
+        if not isinstance(distance, int):
+            raise TypeError("distance is not int")
+
         self.distance = distance
         return self
 
     def set_threshold(self, threshold: int):
+        if not isinstance(threshold, int):
+            raise TypeError("threshold is not int")
+
         self.threshold = threshold
         return self
 
     def set_number_of_corrected_words(self, number_of_corrected_words: int):
+        if not isinstance(number_of_corrected_words, int):
+            raise TypeError("number_of_corrected_words is not int")
+
         self.number_of_corrected_words = number_of_corrected_words
         return self
