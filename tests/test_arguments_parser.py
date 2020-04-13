@@ -16,10 +16,12 @@ class ArgumentsParserTest(unittest.TestCase):
         parsed = self.parser.parse_args([])
 
         # These parameters haven't default value
-        self.assertEqual(parsed.count, None)
-        self.assertEqual(parsed.words_dictionary, None)
+        self.assertIsNone(parsed.count, None)
+        self.assertIsNone(parsed.words_dictionary, None)
+        self.assertIsNone(parsed.tree, None)
 
         # These parameters have default value
+        self.assertEqual(parsed.encoding, 'utf-8')
         self.assertEqual(parsed.destination, ap.DESTINATION_FILE)
         self.assertEqual(parsed.source, ap.PASSWORDS_FILE)
         self.assertEqual(parsed.frequency, ap.FREQUENCY_FILE)
@@ -38,14 +40,6 @@ class ArgumentsParserTest(unittest.TestCase):
         self.assertEqual(parsed.words_dictionary, None)
 
     def test_incorrect_input(self):
-        # One argument is expected
-        with self.assertRaises(SystemExit):
-            self.parser.parse_args(['-s'])
-
         # Type error because the destination is string
         with self.assertRaises(TypeError):
             self.parser.parse_args(['-d', 1234])
-
-        # This parameter is unknown
-        with self.assertRaises(SystemExit) :
-            self.parser.parse_args(['-q', 'txt'])
