@@ -21,7 +21,8 @@ class LoadDataTest(unittest.TestCase):
             for i in range(self.count):
                 file.write(str(i) + '\n')
 
-        open(self.empty_file, 'w')
+        file = open(self.empty_file, 'w')
+        file.close()
 
     def test_incorrect_filename(self):
         # If file doesn't exist
