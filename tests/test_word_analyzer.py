@@ -91,3 +91,16 @@ class WordAnalyzerTest(unittest.TestCase):
         tree2 = self.word_analyzer.build_bk_tree('test')
         self.assertEqual(tree.tree, tree2.tree)
         os.remove('test')
+
+    def test_correct_similar_words(self):
+        self.assertEqual(self.word_analyzer.get_similar_words('one', distance=0), ['one'])
+        self.assertEqual(self.word_analyzer.get_similar_words('one', number_similar_words=5, distance=3),
+                         ['two', 'five', 'one', 'four'])
+        self.assertEqual(self.word_analyzer.get_similar_words('one', number_similar_words=5, distance=4),
+                         self.frequency_words)
+
+        self.assertEqual(self.word_analyzer.get_similar_words(''), None)
+
+    def test_incorrect_similar_words(self):
+        with self.assertRaises(TypeError):
+            self.word_analyzer.get_similar_words(None)
