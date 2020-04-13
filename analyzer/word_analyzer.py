@@ -41,6 +41,15 @@ class WordAnalyzer:
         # If the word isn't in the dictionary, then its cost is default_cost
         self.default_cost = 100
 
+        # How many similar words will be returned by get_similar_words method
+        self.number_similar_words = 4
+        # What distance will be used to search for similar words
+        self.distance = 1
+        # How many parts will be spliced in the get_correct_words method
+        self.threshold = 2
+        # How many words will be returned by get_correct_words method
+        self.number_of_corrected_words = 4
+
     def get_total_cost(self, text: str) -> int:
         """
         Calculate total cost of the text based on cost of the each word
@@ -50,7 +59,7 @@ class WordAnalyzer:
 
         return sum([self.splitter.word_cost.get(word, self.default_cost) for word in self.splitter.split(text)])
 
-    def get_clear_word(self, word):
+    def get_clear_word(self, word: str):
         """
         This function iterates through all possible combinations of indices, which were obtained from
         get_indices_incorrect_symbols and the call to the get_all_combinations function.
@@ -190,3 +199,19 @@ class WordAnalyzer:
 
         arr = sorted(evaluated_words)[:number_of_corrected_words]
         return [it[1] for it in arr]
+
+    def set_number_similar_words(self, number: int) :
+        self.number_similar_words = number
+        return self
+
+    def set_distance(self, distance: int):
+        self.distance = distance
+        return self
+
+    def set_threshold(self, threshold: int):
+        self.threshold = threshold
+        return self
+
+    def set_number_of_corrected_words(self, number_of_corrected_words: int):
+        self.number_of_corrected_words = number_of_corrected_words
+        return self
