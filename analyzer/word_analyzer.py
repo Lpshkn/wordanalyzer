@@ -115,3 +115,22 @@ class WordAnalyzer:
                 return tree
         else:
             return bk.BKTree(Damerau().distance, self.frequency_words)
+
+    def get_similar_words(self, word: str, number_similar_words=4, distance=1) -> list:
+        """
+        This function finds all similar words to passed word depending on the Damerau's distance. Function returns
+        only first number_similar_words (by default, 4) words of the most similar words.
+
+        :param word: function will find similar words to this word
+        :param number_similar_words: how many words will be returned
+        :param distance: Damerau's distance
+        :return: list of the most similar words
+        """
+        found_words = self.tree.find(word, distance)
+
+        arr = [[self.get_total_cost(it[1]), it[1]] for it in found_words]
+        if arr:
+            arr = sorted(arr)[:number_similar_words]
+            return [it[1] for it in arr]
+        else:
+            return None
