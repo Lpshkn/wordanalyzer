@@ -1,0 +1,2 @@
+pybktree==1.1
+strsim==0.0.3
