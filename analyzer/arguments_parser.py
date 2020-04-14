@@ -64,4 +64,30 @@ def arguments_parser() -> ArgumentParser:
                              "doesn't exist, it will be built and saved to this file",
                         type=str)
 
+    parser.add_argument('-similar', '--similar-words',
+                        help="how many similar words will be returned by get_similar_words method. It provides more"
+                             "thorough search for correcting word, but slows down the speed",
+                        default=4,
+                        type=int)
+
+    parser.add_argument('-dist', '--distance',
+                        help="what Damerau's distance will be used to search for similar words. You must select the"
+                             "lowest optimal value, else the word may be corrected wrongly",
+                        default=1,
+                        type=int)
+
+    parser.add_argument('-tres', '--threshold',
+                        help="how many parts will be spliced when processing and searching for a correct word. "
+                             "It will influence to searching correct word. Youcan try to change this value, "
+                             "but it's undesirable.",
+                        default=2,
+                        type=int)
+
+    parser.add_argument('-n', '--number-corrected',
+                        help="how many corrected words will be returned after processing and correcting a word."
+                             "You should keep in mind that one cleared word (without any incorrect symbols) will be"
+                             "added to the new corrected words.",
+                        default=4,
+                        type=int)
+
     return parser
