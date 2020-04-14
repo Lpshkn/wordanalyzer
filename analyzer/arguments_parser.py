@@ -44,11 +44,6 @@ def arguments_parser() -> ArgumentParser:
                         default=DESTINATION_FILE,
                         type=str)
 
-    parser.add_argument('-w', '--words-dictionary',
-                        help="The dictionary which will be used to perform correcting incorrect words (by default, "
-                             "the same file as in -f parameter).",
-                        type=str)
-
     parser.add_argument('-c', '--count',
                         help="Count of words which will be processed (set of words will be selected randomly).",
                         type=int)
