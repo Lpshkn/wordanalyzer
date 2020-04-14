@@ -11,6 +11,7 @@ setup(
     entry_points={
         'console_scripts': ['wordanalyzer = analyzer.main:main']
     },
+    test_suite="tests",
     install_requires=[
         'pybktree==1.1',
         'strsim==0.0.3'
