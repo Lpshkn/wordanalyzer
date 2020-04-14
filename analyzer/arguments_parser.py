@@ -90,4 +90,9 @@ def arguments_parser() -> ArgumentParser:
                         default=4,
                         type=int)
 
+    parser.add_argument('-v', '--verbose',
+                        help="if it specified, then the process of correcting words will be printed",
+                        default=False,
+                        type=bool)
+
     return parser
