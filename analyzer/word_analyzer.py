@@ -130,16 +130,18 @@ class WordAnalyzer:
             print("The bk-tree built successfully")
             return tree
 
-    def get_similar_words(self, word: str, number_similar_words=4, distance=1) -> list:
+    def get_similar_words(self, word: str) -> list:
         """
         This function finds all similar words to passed word depending on the Damerau's distance. Function returns
         only first number_similar_words (by default, 4) words of the most similar words.
 
         :param word: function will find similar words to this word
-        :param number_similar_words: how many words will be returned
-        :param distance: Damerau's distance
         :return: list of the most similar words
         """
+
+        number_similar_words = self.number_similar_words
+        distance = self.distance
+
         found_words = self.tree.find(word, distance)
 
         arr = [[self.get_total_cost(it[1]), it[1]] for it in found_words]
@@ -149,7 +151,7 @@ class WordAnalyzer:
         else:
             return None
 
-    def get_correct_words(self, word: str, threshold=2, number_of_corrected_words=4) -> set:
+    def get_correct_words(self, word: str) -> set:
         """
         This function clears passed word, then splits it to some parts and in turn splice these parts into one word,
         trying to find the cheapest for each. How many parts will be spliced is determined by the threshold argument.
@@ -158,11 +160,12 @@ class WordAnalyzer:
         in order to build optimal list of corrected words.
 
         :param word: word that will be corrected
-        :param threshold: how many parts will be spliced
-        :param number_of_corrected_words: how many corrected words will be returned
         :return: list of corrected words
         """
+
         minimum_parts = 2
+        threshold = self.threshold
+        number_of_corrected_words = self.number_of_corrected_words
 
         word = self.get_clear_word(word)
         parts = self.splitter.split(word)
@@ -197,10 +200,13 @@ class WordAnalyzer:
         if len(parts) < minimum_parts:
             arr = []
             for part in parts:
-                similar = self.get_similar_words(part, number_similar_words=number_of_corrected_words)
+                similar = self.get_similar_words(part)
                 if similar:
                     arr.extend(similar)
-            arr.append(word)
+
+            arr = sorted(evaluated_words)[:number_of_corrected_words]
+            if word:
+                arr.append(word)
             return set(arr)
 
         for i in range(len(parts)):
@@ -216,7 +222,8 @@ class WordAnalyzer:
                     evaluated_words.extend(full_words)
 
         arr = sorted(evaluated_words)[:number_of_corrected_words]
-        arr.append([0, word])
+        if word:
+            arr.append([0, word])
 
         return set(it[1] for it in arr)
 
