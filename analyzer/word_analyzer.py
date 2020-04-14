@@ -109,20 +109,29 @@ class WordAnalyzer:
                     if os.stat(filename).st_size == 0:
                         raise ValueError("File is empty")
 
+                    print("The bk-tree is loading from {}...".format(filename))
                     tree = pickle.load(file)
 
                     if not isinstance(tree, bk.BKTree):
                         raise TypeError("Was loaded not bk-tree")
 
+                    print("The bk-tree loaded successfully")
+
                     return tree
             else:
+                print("The bk-tree is building...")
                 tree = bk.BKTree(Damerau().distance, self.frequency_words)
+                print("The bk-tree is saving to {}...".format(filename))
                 with open(filename, 'wb') as file:
                     pickle.dump(tree, file)
 
+                print("The bk-tree built and saved successfully")
                 return tree
         else:
-            return bk.BKTree(Damerau().distance, self.frequency_words)
+            print("The bk-tree is building...")
+            tree = bk.BKTree(Damerau().distance, self.frequency_words)
+            print("The bk-tree built successfully")
+            return tree
 
     def get_similar_words(self, word: str, number_similar_words=4, distance=1) -> list:
         """
