@@ -9,32 +9,27 @@ from math import log
 
 class WordAnalyzerTest(unittest.TestCase):
     def setUp(self) -> None:
-        self.words = ['one', 'two', 'three', 'four', 'five', 'six']
         self.frequency_words = ['three', 'two', 'five', 'one', 'four']
 
         self.word_cost = dict((k, log((i + 1) * log(len(self.frequency_words)))) for i, k in enumerate(self.frequency_words))
-        self.word_analyzer = WordAnalyzer(self.words, self.frequency_words)
+        self.word_analyzer = WordAnalyzer(self.frequency_words)
 
     def test_correct_constructor(self):
         self.assertEqual(self.frequency_words, self.word_analyzer.frequency_words)
-        self.assertEqual(self.words, self.word_analyzer.words)
         self.assertEqual(self.word_cost, self.word_analyzer.splitter.word_cost)
 
     def test_incorrect_constructor(self):
         with self.assertRaises(ValueError):
-            WordAnalyzer([], self.frequency_words)
-
-        with self.assertRaises(ValueError):
-            WordAnalyzer(self.words, [])
+            WordAnalyzer([])
 
         with self.assertRaises(TypeError):
-            WordAnalyzer(None, None)
+            WordAnalyzer(None)
 
         with self.assertRaises(TypeError):
-            WordAnalyzer(1, self.frequency_words)
+            WordAnalyzer(1)
 
         with self.assertRaises(TypeError):
-            WordAnalyzer(self.words, 'string')
+            WordAnalyzer('string')
 
     def test_correct_total_cost(self):
         text = 'onetwothreefour'
@@ -93,12 +88,15 @@ class WordAnalyzerTest(unittest.TestCase):
         os.remove('test')
 
     def test_correct_similar_words(self):
-        self.assertEqual(self.word_analyzer.get_similar_words('one', distance=0), ['one'])
-        self.assertEqual(self.word_analyzer.get_similar_words('one', number_similar_words=5, distance=3),
+        self.word_analyzer.set_distance(0)
+        self.assertEqual(self.word_analyzer.get_similar_words('one'), ['one'])
+        self.word_analyzer.set_distance(3).set_number_similar_words(5)
+        self.assertEqual(self.word_analyzer.get_similar_words('one'),
                          ['two', 'five', 'one', 'four'])
-        self.assertEqual(self.word_analyzer.get_similar_words('one', number_similar_words=5, distance=4),
+        self.word_analyzer.set_distance(4).set_number_similar_words(5)
+        self.assertEqual(self.word_analyzer.get_similar_words('one'),
                          self.frequency_words)
-
+        self.word_analyzer.set_distance(1).set_number_similar_words(4)
         self.assertEqual(self.word_analyzer.get_similar_words(''), None)
 
     def test_incorrect_similar_words(self):
@@ -106,8 +104,9 @@ class WordAnalyzerTest(unittest.TestCase):
             self.word_analyzer.get_similar_words(None)
 
     def test_get_correct_words(self):
-        self.assertEqual(self.word_analyzer.get_correct_words('0n33'), ['one'])
-        self.assertEqual(self.word_analyzer.get_correct_words('_@thr33'), ['three'])
-        self.assertEqual(self.word_analyzer.get_correct_words('123un'), [])
+        self.word_analyzer.set_distance(1).set_number_similar_words(4)
+        self.assertEqual(self.word_analyzer.get_correct_words('0n33'), {'one'})
+        self.assertEqual(self.word_analyzer.get_correct_words('_@thr33'), {'three'})
+        self.assertEqual(self.word_analyzer.get_correct_words('123un'), {'un'})
         self.word_analyzer.set_distance(0)
-        self.assertEqual(self.word_analyzer.get_correct_words('123tw0'), ['two'])
+        self.assertEqual(self.word_analyzer.get_correct_words('123tw0'), {'two'})

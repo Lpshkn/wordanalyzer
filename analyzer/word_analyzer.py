@@ -6,8 +6,8 @@ working with them.
 import pickle
 import os
 import pybktree as bk
-from .text_splitter import TextSplitter
-from .methods import (get_all_combinations, get_indices_incorrect_symbols, leet_transform)
+from analyzer.text_splitter import TextSplitter
+from analyzer.methods import (get_all_combinations, get_indices_incorrect_symbols, leet_transform)
 from similarity.damerau import Damerau
 
 
