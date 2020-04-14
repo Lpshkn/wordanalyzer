@@ -104,3 +104,10 @@ class WordAnalyzerTest(unittest.TestCase):
     def test_incorrect_similar_words(self):
         with self.assertRaises(TypeError):
             self.word_analyzer.get_similar_words(None)
+
+    def test_get_correct_words(self):
+        self.assertEqual(self.word_analyzer.get_correct_words('0n33'), ['one'])
+        self.assertEqual(self.word_analyzer.get_correct_words('_@thr33'), ['three'])
+        self.assertEqual(self.word_analyzer.get_correct_words('123un'), [])
+        self.word_analyzer.set_distance(0)
+        self.assertEqual(self.word_analyzer.get_correct_words('123tw0'), ['two'])
