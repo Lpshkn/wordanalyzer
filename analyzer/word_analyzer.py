@@ -12,7 +12,9 @@ from similarity.damerau import Damerau
 
 
 class WordAnalyzer:
-    def __init__(self, words: list, frequency_words: list, filename_tree: str = None):
+    def __init__(self, words: list, frequency_words: list, filename_tree: str = None,
+                 number_similar_words: int = 4, distance: int = 1, threshold: int = 2,
+                 number_of_corrected_words: int = 4):
         """
         :param words: list of words which you need to analyze
         :param frequency_words: list of words ordered by frequency usage
@@ -42,13 +44,13 @@ class WordAnalyzer:
         self.default_cost = 100
 
         # How many similar words will be returned by get_similar_words method
-        self.number_similar_words = 4
+        self.number_similar_words = number_similar_words
         # What distance will be used to search for similar words
-        self.distance = 1
+        self.distance = distance
         # How many parts will be spliced in the get_correct_words method
-        self.threshold = 2
+        self.threshold = threshold
         # How many words will be returned by get_correct_words method
-        self.number_of_corrected_words = 4
+        self.number_of_corrected_words = number_of_corrected_words
 
     def get_total_cost(self, text: str) -> int:
         """
