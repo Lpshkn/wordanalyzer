@@ -160,7 +160,7 @@ class WordAnalyzer:
         parts = self.splitter.split(word)
         evaluated_words = []
 
-        def replace_correcting_parts(parts: list, similar_words: list, indices: list) -> list:
+        def replace_correcting_parts(parts: list, similar_words: list, indices: list) -> set:
             """
             This function receives parts - list of parts of a word. Some of these parts whose indices are passed as
             third argument splice into one word and similar words to that word pass to this function.
@@ -189,8 +189,11 @@ class WordAnalyzer:
         if len(parts) < minimum_parts:
             arr = []
             for part in parts:
-                arr.extend(self.get_similar_words(part, number_similar_words=number_of_corrected_words))
-            return arr
+                similar = self.get_similar_words(part, number_similar_words=number_of_corrected_words)
+                if similar:
+                    arr.extend(similar)
+            arr.append(word)
+            return set(arr)
 
         for i in range(len(parts)):
             # That value will decrease
@@ -205,7 +208,9 @@ class WordAnalyzer:
                     evaluated_words.extend(full_words)
 
         arr = sorted(evaluated_words)[:number_of_corrected_words]
-        return [it[1] for it in arr]
+        arr.append([0, word])
+
+        return set(it[1] for it in arr)
 
     def set_number_similar_words(self, number: int):
         if not isinstance(number, int):
