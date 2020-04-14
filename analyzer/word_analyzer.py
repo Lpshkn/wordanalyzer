@@ -12,27 +12,24 @@ from similarity.damerau import Damerau
 
 
 class WordAnalyzer:
-    def __init__(self, words: list, frequency_words: list, filename_tree: str = None,
+    def __init__(self, frequency_words: list, filename_tree: str = None,
                  number_similar_words: int = 4, distance: int = 1, threshold: int = 2,
                  number_of_corrected_words: int = 4):
         """
-        :param words: list of words which you need to analyze
         :param frequency_words: list of words ordered by frequency usage
         """
 
-        if not isinstance(words, (list, tuple)) or not isinstance(frequency_words, (list, tuple)):
-            raise TypeError("Lists must be list type")
+        if not isinstance(frequency_words, (list, tuple)):
+            raise TypeError("List must be list type")
 
         # Lists can't be empty or None
-        if words == [] or frequency_words == []:
+        if not frequency_words:
             raise ValueError("The list of words is empty")
 
         # It's necessary the each element is str type in the list
-        if not all(isinstance(word, str) for word in words) or not \
-                all(isinstance(word, str) for word in frequency_words):
+        if not all(isinstance(word, str) for word in frequency_words):
             raise TypeError("The list of words has a non string type element")
 
-        self.words = words
         self.frequency_words = frequency_words
 
         self.splitter = TextSplitter(frequency_words)
@@ -152,7 +149,7 @@ class WordAnalyzer:
         else:
             return None
 
-    def get_correct_words(self, word: str, threshold=2, number_of_corrected_words=4) -> list:
+    def get_correct_words(self, word: str, threshold=2, number_of_corrected_words=4) -> set:
         """
         This function clears passed word, then splits it to some parts and in turn splice these parts into one word,
         trying to find the cheapest for each. How many parts will be spliced is determined by the threshold argument.
@@ -171,7 +168,7 @@ class WordAnalyzer:
         parts = self.splitter.split(word)
         evaluated_words = []
 
-        def replace_correcting_parts(parts: list, similar_words: list, indices: list) -> set:
+        def replace_correcting_parts(parts: list, similar_words: list, indices: list) -> list:
             """
             This function receives parts - list of parts of a word. Some of these parts whose indices are passed as
             third argument splice into one word and similar words to that word pass to this function.
