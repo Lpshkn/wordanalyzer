@@ -45,16 +45,35 @@ You should keep in mind that one cleared word (without any incorrect symbols) wi
 ```-v, --verbose``` - if it specified, the process of correcting words will be printed to stdout.
 
 ## Installation
+1) You can install it to your host machine like:
+    * `git clone https://gitlab.com/lpshkn/wordanalyzer.git`
+    * `cd wordanalyzer`
+    * run tests - `python3 setup.py test`
+    * setup - `sudo python3 setup.py install`
 
-* `git clone https://gitlab.com/lpshkn/wordanalyzer.git`
-* `cd wordanalyzer`
-* run tests - `python3 setup.py test`
-* setup - `sudo python3 setup.py install`
+2) You can build a docker image:
+    * `git clone https://gitlab.com/lpshkn/wordanalyzer.git`
+    * `cd wordanalyzer`
+    * `docker build -t wordanalyzer:0.1.0 .`
 
 ## Usage
 
-`wordanalyzer [-s <source_file>] [-d <destination_file>] [-c <count>] [-e <encoding>] [-t <tree>] [-similar <number>]
-[-dist <distance>] [-thres <threshold>] [-n <number>] [-v]`
+```shell script
+wordanalyzer [-s <source_file>] [-d <destination_file>] [-c <count>] [-e <encoding>] [-t <tree>] [-similar <number>]
+[-dist <distance>] [-thres <threshold>] [-n <number>] [-v]
+```
+
+If you built the docker image, you can run it:
+
+```shell script
+docker run -it wordanalyzer:0.1.0
+```
+
+All data files are in /data directory. To try it out, just input:
+
+```shell script
+wordanalyzer -t data/bk_tree.pickle -c 300 -v -d new_words.txt
+```
 
 ## Testing:
 
@@ -83,7 +102,9 @@ TOTAL                             321     39    88%
 analyze just 300 words of all list and save the result to `new_words.txt`. Meanwhile, we'll build and save a bk-tree to
 `bk_tree.pickle`. Then it will seem like:
 
-  ```wordanalyzer -s rockyou.txt -d new_words.txt -f frequency_words.txt -t bk_tree.pickle -c 300```
+  ```shell script
+  wordanalyzer -s rockyou.txt -d new_words.txt -f frequency_words.txt -t bk_tree.pickle -c 300
+  ```
   
   If you want to see the process, append `-v`
   
@@ -91,4 +112,6 @@ analyze just 300 words of all list and save the result to `new_words.txt`. Meanw
 with the last result. You can try change any different values of `-similar`, `-dist`, `-thres`, `-n`, but it can 
 both improve the result and decrease it. Absolutely, very big values promote to increase work time.
 
-  ```wordanalyzer -t bk_tree.pickle -similar 6 -dist 2 -thres 3 -n 5```
+  ```shell script
+  wordanalyzer -t bk_tree.pickle -similar 6 -dist 2 -thres 3 -n 5
+  ```
