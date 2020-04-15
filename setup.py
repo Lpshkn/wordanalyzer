@@ -6,6 +6,7 @@ setup(
     name='wordanalyzer',
     version=analyzer.__version__,
     packages=find_packages(),
+    data_files=[('data', ['data/rockyou.txt', 'data/frequency_words.txt'])],
     long_description=open(join(dirname(__file__), 'README.md')).read(),
     author='lpshkn',
     entry_points={
