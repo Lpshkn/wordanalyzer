@@ -22,6 +22,7 @@ def main():
                 if new_words:
                     file.writelines('\n'.join(new_words))
                     file.write('\n')
+        print("New corrected words were saved successfully")
 
     else:
         with open(args.destination, 'w') as file:
@@ -31,6 +32,7 @@ def main():
                 if new_words:
                     file.writelines('\n'.join(new_words))
                     file.write('\n')
+        print("New corrected words were saved successfully")
 
 
 if __name__ == '__main__':

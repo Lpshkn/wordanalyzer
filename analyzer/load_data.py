@@ -27,7 +27,12 @@ def load_words(words_filename: str, count: int = None, encoding: str = 'utf-8') 
     with codecs.open(words_filename, 'r', encoding) as f:
         data = f.read().splitlines()
 
-    return sample(data, count) if count is not None else data
+    if count:
+        print(f"Loading {count} words from {words_filename}...")
+        return sample(data, count)
+    else:
+        print(f"Loading all words from {words_filename}...")
+        return data
 
 
 class EmptyFileError(Exception):
