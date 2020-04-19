@@ -56,6 +56,17 @@ You should keep in mind that one cleared word (without any incorrect symbols) wi
     * `cd wordanalyzer`
     * `docker build -t wordanalyzer:0.1.0 .`
 
+## Guidance for first use
+
+After you installed it (either build a docker or install it on the host machine), just launch it by next command:
+```shell script
+wordanalyzer -t data/bk_tree.pickle -c 300 -v -d corrected_words.txt
+```
+That command runs the process of correcting 300 words from the rockyou.txt, prints the result of correcting an each word
+ in real time and saves the results into file "corrected_words.txt" in the same directory. 
+ 
+ If you need to control the process of correcting words, just look at the console, where results will be printed.
+
 ## Usage
 
 ```shell script
