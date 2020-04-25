@@ -22,6 +22,13 @@ def main():
             if new_words:
                 file.writelines('\n'.join(new_words))
                 file.write('\n')
+
+    # Remove duplicates and make all words lower
+    with open(args.destination, 'r+') as file:
+        words = set(word.lower() for word in file.readlines())
+        file.truncate(0)
+        file.writelines(words)
+
     print("New corrected words were saved successfully")
 
 
