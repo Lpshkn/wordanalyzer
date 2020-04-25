@@ -6,6 +6,9 @@ This program analyzes the source set of words was obtained from the file (-s par
 from incorrect symbols, split cleared words to lexemes, then correct them by replacing assumed incorrect words 
 to right words and then will create new set of words and save it to the destination file (-d parameter).
 
+Also this program provides word clearing (-clr parameter) or returning (-cost parameter) of the total word cost 
+based on word splitting depending on the list of words ordered by usage frequency.
+
 ##### Optional arguments:
 
 ```-s, --source``` - the source file containing the set of words you need to analyze. By default, it's 
@@ -42,6 +45,15 @@ the number of parts of a word that will be in turn processed to generate new cor
 ```-n, --number-corrected``` - how many corrected words will be returned after processing and correcting a word. 
 You should keep in mind that one cleared word (without any incorrect symbols) will be added to the new corrected words.
 
+```-cost, --total-cost``` - return summary cost for each word passed to input. If it's specified, another methods
+won't work.
+
+```-clr, --clear-word``` - return cleared words from the incorrect symbols depending on the total sum of the word.
+If it's specified, another methods will not work. This method replaces -sum option.
+
+```-w, --words``` - input list of words which you need to process. If it's specified, the source list of words will be
+ignored.
+
 ```-v, --verbose``` - if it specified, the process of correcting words will be printed to stdout.
 
 ## Installation
@@ -71,7 +83,7 @@ That command runs the process of correcting 300 words from the rockyou.txt, prin
 
 ```shell script
 wordanalyzer [-s <source_file>] [-d <destination_file>] [-c <count>] [-e <encoding>] [-t <tree>] [-similar <number>]
-[-dist <distance>] [-thres <threshold>] [-n <number>] [-v]
+[-dist <distance>] [-thres <threshold>] [-n <number>] [-cost] [-clr] [-w <words>] [-v]
 ```
 
 If you built the docker image, you can run it:
@@ -84,6 +96,23 @@ All data files are in /data directory. To try it out, just input:
 
 ```shell script
 wordanalyzer -t data/bk_tree.pickle -c 300 -v -d new_words.txt
+```
+
+You can pass to this program a list of words which you need to process using a -w parameter. 
+Note, that this option replaces a file containing a list of words passed to the input (-s parameter):
+
+```shell script
+wordanalyzer -t data/bk_tree.pickle -w ex4mpl3 th1515mypa55word -v
+```
+
+If you want to get total word cost, you can use -cost parameter. This method doesn't save results to a file:
+```shell script
+wordanalyzer -t data/bk_tree.pickle -w ex4mpl3 th1515mypa55word -cost
+``` 
+
+If you want to get cleared words, you can use -clr parameter. This method doesnt' save results to a file:
+```shell script
+wordanalyzer -t data/bk_tree.pickle -w ex4mpl3 -clr
 ```
 
 ## Testing:
