@@ -7,7 +7,7 @@ import pickle
 import os
 import pybktree as bk
 from analyzer.text_splitter import TextSplitter
-from analyzer.methods import (get_all_combinations, get_indices_incorrect_symbols, leet_transform)
+from analyzer.methods import (get_all_combinations, get_indices_incorrect_symbols, leet_transform, factorize)
 from similarity.damerau import Damerau
 
 
@@ -48,6 +48,11 @@ class WordAnalyzer:
         self.threshold = threshold
         # How many words will be returned by get_correct_words method
         self.number_of_corrected_words = number_of_corrected_words
+
+        # Define dictionary with values like (number: list_of_divisors).
+        # There are defined all numbers from 1 to max length of all words.
+        # It's necessary to improve efficiency, because divisors won't calculated again for same number
+        self.divisors = dict((number, factorize(number)) for number in range(1, self.splitter.max_len + 1))
 
     def get_total_cost(self, text: str) -> int:
         """
