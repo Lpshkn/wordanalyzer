@@ -94,6 +94,32 @@ class WordAnalyzer:
 
         return cleared_word[1]
 
+    def __detect_repeated_word(self, word: str) -> str:
+        """
+        This method detects that some part is repeated in the word and returns that part.
+        If any part is not found, returns empty string.
+
+        :param word: word which will be checked
+        :return: repeated word
+        """
+
+        # Get list of divisors for word's length
+        divisors = self.divisors[len(word)]
+
+        # Split the word to the number of parts determined by the divisor. If the part is repeated,
+        # then all next parts equal it.
+        for divisor in divisors:
+            repeat = True
+            part = word[:divisor]
+
+            for start in range(0, len(word), divisor):
+                if word[start:start + divisor] != part:
+                    repeat = False
+                    break
+
+            if repeat:
+                return part
+
     def __build_bk_tree(self, filename: str = None) -> bk.BKTree:
         """
         This function builds the BK-tree based on frequency words. If bk-tree is already saved in the file,
@@ -173,6 +199,11 @@ class WordAnalyzer:
         number_of_corrected_words = self.number_of_corrected_words
 
         word = self.get_clear_word(word)
+
+        repeated_word = self.__detect_repeated_word(word)
+        if repeated_word:
+            word = repeated_word
+
         parts = self.splitter.split(word)
         evaluated_words = []
 
