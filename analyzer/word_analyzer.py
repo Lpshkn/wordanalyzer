@@ -49,7 +49,7 @@ class WordAnalyzer:
         # How many words will be returned by get_correct_words method
         self.number_of_corrected_words = number_of_corrected_words
 
-    def __get_total_cost(self, text: str) -> int:
+    def get_total_cost(self, text: str) -> int:
         """
         Calculate total cost of the text based on cost of the each word
         :param text: the text without spaces
@@ -58,7 +58,7 @@ class WordAnalyzer:
 
         return sum([self.splitter.word_cost.get(word, self.default_cost) for word in self.splitter.split(text)])
 
-    def __get_clear_word(self, word: str):
+    def get_clear_word(self, word: str):
         """
         This function iterates through all possible combinations of indices, which were obtained from
         get_indices_incorrect_symbols and the call to the get_all_combinations function.
@@ -83,7 +83,7 @@ class WordAnalyzer:
         for combinations in all_combinations:
             prepared_str = leet_transform(word, combinations)
 
-            total_cost = self.__get_total_cost(prepared_str.lower())
+            total_cost = self.get_total_cost(prepared_str.lower())
             if total_cost < cleared_word[0]:
                 cleared_word = [total_cost, prepared_str]
 
@@ -144,7 +144,7 @@ class WordAnalyzer:
 
         found_words = self.tree.find(word, distance)
 
-        arr = [[self.__get_total_cost(it[1]), it[1]] for it in found_words]
+        arr = [[self.get_total_cost(it[1]), it[1]] for it in found_words]
         if arr:
             arr = sorted(arr)[:number_similar_words]
             return [it[1] for it in arr]
@@ -167,7 +167,7 @@ class WordAnalyzer:
         threshold = self.threshold
         number_of_corrected_words = self.number_of_corrected_words
 
-        word = self.__get_clear_word(word)
+        word = self.get_clear_word(word)
         parts = self.splitter.split(word)
         evaluated_words = []
 
@@ -191,7 +191,7 @@ class WordAnalyzer:
             full_words_with_cost = []
             for similar_word in similar_words:
                 full_word = ''.join(parts[:i] + [similar_word] + parts[j:])
-                cost = self.__get_total_cost(full_word)
+                cost = self.get_total_cost(full_word)
                 full_words_with_cost.append([cost, full_word])
 
             return full_words_with_cost

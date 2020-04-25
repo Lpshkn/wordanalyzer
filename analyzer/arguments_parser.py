@@ -85,7 +85,7 @@ def arguments_parser() -> ArgumentParser:
                         default=2,
                         type=int)
 
-    parser.add_argument('-sum', '--total-sum',
+    parser.add_argument('-cost', '--total-cost',
                         help="Return summary cost for each word passed to input. If it's specified, another methods "
                              "will not work.",
                         action='store_true')
