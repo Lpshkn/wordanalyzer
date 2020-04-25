@@ -73,7 +73,7 @@ def arguments_parser() -> ArgumentParser:
 
     parser.add_argument('-tres', '--threshold',
                         help="How many parts will be spliced when processing and searching for a correct word. "
-                             "It will influence to searching correct word. Youcan try to change this value, "
+                             "It will influence to searching correct word. You can try to change this value, "
                              "but it's undesirable.",
                         default=2,
                         type=int)
@@ -82,7 +82,7 @@ def arguments_parser() -> ArgumentParser:
                         help="How many corrected words will be returned after processing and correcting a word."
                              "You should keep in mind that one cleared word (without any incorrect symbols) will be"
                              "added to the new corrected words.",
-                        default=4,
+                        default=2,
                         type=int)
 
     parser.add_argument('-v', '--verbose',

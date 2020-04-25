@@ -14,7 +14,7 @@ from similarity.damerau import Damerau
 class WordAnalyzer:
     def __init__(self, frequency_words: list, filename_tree: str = None,
                  number_similar_words: int = 4, distance: int = 1, threshold: int = 2,
-                 number_of_corrected_words: int = 4):
+                 number_of_corrected_words: int = 2):
         """
         :param frequency_words: list of words ordered by frequency usage
         """
