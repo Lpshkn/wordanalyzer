@@ -10,7 +10,7 @@ def leet_transform(word: str, indices: list) -> str:
     """
     This functions clears the passed word from digits, service symbols or any incorrect characters.
     Also it corrects "leet" characters if their indices were passed
-    :param word: the word you need to correct
+    :param word: the word you need to correctТак
     :param indices: indices of incorrect characters that will be corrected
     :return: corrected word
     """
@@ -21,7 +21,11 @@ def leet_transform(word: str, indices: list) -> str:
         '1': 'i',
         '0': 'o',
         '3': 'e',
-        '@': 'a'
+        '@': 'a',
+        '4': 'a',
+        '7': 't',
+        '6': 'g',
+        '5': 's'
     }
 
     for index in indices:
