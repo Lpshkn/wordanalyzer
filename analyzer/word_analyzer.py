@@ -35,7 +35,7 @@ class WordAnalyzer:
         self.splitter = TextSplitter(frequency_words)
 
         # Build BK-tree for correcting words
-        self.tree = self.build_bk_tree(filename_tree)
+        self.tree = self.__build_bk_tree(filename_tree)
 
         # If the word isn't in the dictionary, then its cost is default_cost
         self.default_cost = 100
@@ -49,7 +49,7 @@ class WordAnalyzer:
         # How many words will be returned by get_correct_words method
         self.number_of_corrected_words = number_of_corrected_words
 
-    def get_total_cost(self, text: str) -> int:
+    def __get_total_cost(self, text: str) -> int:
         """
         Calculate total cost of the text based on cost of the each word
         :param text: the text without spaces
@@ -58,7 +58,7 @@ class WordAnalyzer:
 
         return sum([self.splitter.word_cost.get(word, self.default_cost) for word in self.splitter.split(text)])
 
-    def get_clear_word(self, word: str):
+    def __get_clear_word(self, word: str):
         """
         This function iterates through all possible combinations of indices, which were obtained from
         get_indices_incorrect_symbols and the call to the get_all_combinations function.
@@ -83,13 +83,13 @@ class WordAnalyzer:
         for combinations in all_combinations:
             prepared_str = leet_transform(word, combinations)
 
-            total_cost = self.get_total_cost(prepared_str.lower())
+            total_cost = self.__get_total_cost(prepared_str.lower())
             if total_cost < cleared_word[0]:
                 cleared_word = [total_cost, prepared_str]
 
         return cleared_word[1]
 
-    def build_bk_tree(self, filename: str = None) -> bk.BKTree:
+    def __build_bk_tree(self, filename: str = None) -> bk.BKTree:
         """
         This function builds the BK-tree based on frequency words. If bk-tree is already saved in the file,
         it will be loaded and returned, if filename was passed. BK-tree builds based on Damerau's distance.
@@ -130,7 +130,7 @@ class WordAnalyzer:
             print("The bk-tree built successfully")
             return tree
 
-    def get_similar_words(self, word: str) -> list:
+    def __get_similar_words(self, word: str) -> list:
         """
         This function finds all similar words to passed word depending on the Damerau's distance. Function returns
         only first number_similar_words (by default, 4) words of the most similar words.
@@ -144,7 +144,7 @@ class WordAnalyzer:
 
         found_words = self.tree.find(word, distance)
 
-        arr = [[self.get_total_cost(it[1]), it[1]] for it in found_words]
+        arr = [[self.__get_total_cost(it[1]), it[1]] for it in found_words]
         if arr:
             arr = sorted(arr)[:number_similar_words]
             return [it[1] for it in arr]
@@ -167,7 +167,7 @@ class WordAnalyzer:
         threshold = self.threshold
         number_of_corrected_words = self.number_of_corrected_words
 
-        word = self.get_clear_word(word)
+        word = self.__get_clear_word(word)
         parts = self.splitter.split(word)
         evaluated_words = []
 
@@ -191,7 +191,7 @@ class WordAnalyzer:
             full_words_with_cost = []
             for similar_word in similar_words:
                 full_word = ''.join(parts[:i] + [similar_word] + parts[j:])
-                cost = self.get_total_cost(full_word)
+                cost = self.__get_total_cost(full_word)
                 full_words_with_cost.append([cost, full_word])
 
             return full_words_with_cost
@@ -200,7 +200,7 @@ class WordAnalyzer:
         if len(parts) < minimum_parts:
             arr = []
             for part in parts:
-                similar = self.get_similar_words(part)
+                similar = self.__get_similar_words(part)
                 if similar:
                     arr.extend(similar)
 
@@ -215,7 +215,7 @@ class WordAnalyzer:
 
             for j in range(i + minimum_parts, max_range + i + 1):
                 spliced_word = ''.join(parts[i:j])
-                similar_words = self.get_similar_words(spliced_word)
+                similar_words = self.__get_similar_words(spliced_word)
 
                 if similar_words:
                     full_words = replace_correcting_parts(parts, similar_words, (i, j - 1))
