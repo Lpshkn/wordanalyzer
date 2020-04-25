@@ -103,6 +103,9 @@ class WordAnalyzer:
         :return: repeated word
         """
 
+        if not len(word):
+            return None
+
         # Get list of divisors for word's length
         divisors = self.divisors[len(word)]
 
