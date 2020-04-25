@@ -13,26 +13,16 @@ def main():
                                  distance=args.distance, threshold=args.threshold,
                                  number_of_corrected_words=args.number_corrected)
 
-    if args.verbose:
-        with open(args.destination, 'w') as file:
-            print("Correcting words is beginning...")
-            for word in words:
-                new_words = word_analyzer.get_correct_words(word)
+    with open(args.destination, 'w') as file:
+        print("Correcting words is beginning...")
+        for word in words:
+            new_words = word_analyzer.get_correct_words(word)
+            if args.verbose:
                 print('ORIGINAL: ', word, ' CORRECTED: ', new_words)
-                if new_words:
-                    file.writelines('\n'.join(new_words))
-                    file.write('\n')
-        print("New corrected words were saved successfully")
-
-    else:
-        with open(args.destination, 'w') as file:
-            print("Correcting words is beginning...")
-            for word in words:
-                new_words = word_analyzer.get_correct_words(word)
-                if new_words:
-                    file.writelines('\n'.join(new_words))
-                    file.write('\n')
-        print("New corrected words were saved successfully")
+            if new_words:
+                file.writelines('\n'.join(new_words))
+                file.write('\n')
+    print("New corrected words were saved successfully")
 
 
 if __name__ == '__main__':
