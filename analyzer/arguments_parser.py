@@ -85,6 +85,16 @@ def arguments_parser() -> ArgumentParser:
                         default=2,
                         type=int)
 
+    parser.add_argument('-sum', '--total-sum',
+                        help="Return summary cost for each word passed to input. If it's specified, another methods "
+                             "will not work.",
+                        type=int)
+
+    parser.add_argument('-clr', '--clear-word',
+                        help="Return cleared words from the incorrect symbols depending on the total sum of the word. "
+                             "If it's specified, another methods will not work. This method replaces -sum option.",
+                        type=str)
+
     parser.add_argument('-v', '--verbose',
                         help="If it specified, then the process of correcting words will be printed",
                         action='store_true')
