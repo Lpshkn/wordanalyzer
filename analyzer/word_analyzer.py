@@ -6,8 +6,9 @@ working with them.
 import pickle
 import os
 import pybktree as bk
+from copy import copy, deepcopy
 from analyzer.text_splitter import TextSplitter
-from analyzer.methods import (get_all_combinations, get_indices_incorrect_symbols, leet_transform, factorize)
+from analyzer.methods import (get_indices_incorrect_symbols, leet_transform, factorize)
 from similarity.damerau import Damerau
 
 
@@ -38,7 +39,7 @@ class WordAnalyzer:
         self.tree = self.__build_bk_tree(filename_tree)
 
         # If the word isn't in the dictionary, then its cost is default_cost
-        self.default_cost = 100
+        self.default_cost = 1000
 
         # How many similar words will be returned by get_similar_words method
         self.number_similar_words = number_similar_words
@@ -63,11 +64,10 @@ class WordAnalyzer:
 
         return sum([self.splitter.word_cost.get(word, self.default_cost) for word in self.splitter.split(text)])
 
-    def get_clear_word(self, word: str):
+    def get_clear_word(self, word: str) -> str:
         """
-        This function iterates through all possible combinations of indices, which were obtained from
-        get_indices_incorrect_symbols and the call to the get_all_combinations function.
-        Function returns the cheapest found word among all these combinations.
+        This function iterates through possible combinations of indices, which were obtained from
+        get_indices_incorrect_symbols. Function returns the cheapest found word among possible combinations.
 
         :param word: word that will be cleared
         :return: the cheapest cleared word
@@ -75,24 +75,54 @@ class WordAnalyzer:
 
         # Get all indices of incorrect symbols
         indices = get_indices_incorrect_symbols(word)
-        # Define the word which will be override
-        cleared_word = [9e999, '']
-        # Get all combinations of indices
-        all_combinations = get_all_combinations(indices)
 
         # Define an empty combination. It's important in order to check the cost of the word without changes
-        all_combinations.append([])
+        all_combinations = [set()]
+        # A cleaned word will be calculated based on this cost
+        minimal_cost, cleared_word = 9e999, ''
 
-        # Find the cheapest cleared word among all the possible combinations of indices,
-        # which will be used to clear the word
-        for combinations in all_combinations:
-            prepared_str = leet_transform(word, combinations)
+        # The idea is absolutely simple: we need to find the optimal list of indexes which will help us to calculate
+        # the cheapest correct word based on leet_transform function. Starting with an empty list, add new calculated
+        # index each iteration. Number of new indexes sets may be limited. Return the cheapest of all calculated words.
+        for key in range(len(indices) + 1):
+            costs_indexes = []
 
-            total_cost = self.get_total_cost(prepared_str.lower())
-            if total_cost < cleared_word[0]:
-                cleared_word = [total_cost, prepared_str]
+            # Iterate over all calculated indexes sets and calculate total cost for each word returned by
+            # leet_transform function
+            for combination in all_combinations:
+                prepared_str = leet_transform(word, combination)
+                total_cost = self.get_total_cost(prepared_str.lower())
+                costs_indexes.append([total_cost, set(combination), prepared_str])
 
-        return cleared_word[1]
+            # Sort all indexes sets by their cost
+            costs_indexes.sort()
+
+            # The first set is the cheapest. Redetermine minimal cost.
+            cost, combination, min_word = costs_indexes[0]
+            if cost < minimal_cost:
+                minimal_cost = cost
+                cleared_word = min_word
+
+            # Take only first 5 sets of all list
+            costs_indexes = costs_indexes[:5]
+            if not costs_indexes:
+                break
+
+            # Calculate new sets of indexes by adding another one
+            all_combinations = set()
+            for cost_index in costs_indexes:
+                for index in indices:
+                    # We need to add indexes from original list which aren't in the redetermined set
+                    if index not in cost_index[1]:
+                        new_combination = deepcopy(cost_index[1])
+                        new_combination.add(index)
+
+                        # It's necessary to convert set to tuple and add it to the final set
+                        # in order to get rid of duplicates
+                        new_combination = tuple(new_combination)
+                        all_combinations.add(new_combination)
+
+        return cleared_word
 
     def __detect_repeated_word(self, word: str) -> str:
         """

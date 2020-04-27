@@ -6,7 +6,7 @@ import re
 from itertools import combinations
 
 
-def leet_transform(word: str, indices: list) -> str:
+def leet_transform(word: str, indices: tuple) -> str:
     """
     This functions clears the passed word from digits, service symbols or any incorrect characters.
     Also it corrects "leet" characters if their indices were passed
@@ -57,23 +57,6 @@ def get_indices_incorrect_symbols(word: str) -> list:
         index += 1
 
     return arr
-
-
-def get_all_combinations(indices: list) -> list:
-    """
-    Function returns all possible combinations of passed indices
-    :param indices: list of indices
-    :return: list containing all combinations of indices
-    """
-
-    if not all(isinstance(index, int) for index in indices):
-        raise TypeError("The list of indices has a non int type element")
-
-    all_combinations = []
-    for i in range(1, len(indices) + 1):
-        all_combinations.extend(combinations(indices, i))
-
-    return all_combinations
 
 
 def factorize(number: int) -> list:
