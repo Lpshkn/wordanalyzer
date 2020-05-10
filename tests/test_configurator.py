@@ -4,13 +4,27 @@ The tests for the analyzer/arguments_parser.py module
 import io
 import os
 import unittest.mock
+from similarity.damerau import Damerau
+from pybktree import BKTree
 from analyzer.configurator import Configurator
 
 
 class ArgumentsParserTest(unittest.TestCase):
     def setUp(self):
-        args = ['-s', 'source', '-f', 'frequency']
-        self.configurator = Configurator(args)
+        self.args = ['-s', 'source', '-f', 'frequency']
+        self.configurator = Configurator(self.args)
+
+        with open('source', 'w') as self.source:
+            self.source.write('teststring')
+        with open('frequency', 'w') as self.frequency:
+            self.frequency.write('teststring')
+
+    def tearDown(self):
+        os.remove('source')
+        os.remove('frequency')
+
+        if os.path.isfile('tree'):
+            os.remove('tree')
 
     @unittest.mock.patch("sys.stderr", new_callable=io.StringIO)
     def test_empty_input_words(self, error):
@@ -74,25 +88,29 @@ class ArgumentsParserTest(unittest.TestCase):
         self.assertEqual(configurator.get_destination(), 'new_file.txt')
 
     def test_get_frequency_words_wrong(self):
+        args = ['-s' 'source', '-f' 'test']
         with self.assertRaises(FileNotFoundError):
-            self.configurator.get_frequency_words()
+            Configurator(args).get_frequency_words()
 
     @unittest.mock.patch('sys.stdout', open(os.devnull, 'w'))
     def test_get_frequency_words_correct(self):
-        with open('frequency', 'w') as file:
-            file.write('teststring')
-
         self.assertEqual(self.configurator.get_frequency_words(), ['teststring'])
-        os.remove('frequency')
 
     def test_get_words_sourcefile_wrong(self):
+        args = ['-s' 'test', '-f' 'test']
         with self.assertRaises(FileNotFoundError):
-            self.configurator.get_words()
+            Configurator(args).get_words()
 
     @unittest.mock.patch('sys.stdout', open(os.devnull, 'w'))
     def test_get_words_sourcefile_correct(self):
-        with open('source', 'w') as file:
-            file.write('teststring')
-
         self.assertEqual(self.configurator.get_words(), ['teststring'])
-        os.remove('source')
+
+    @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
+    def test_get_tree_without_file(self, output):
+        args = self.args + ['-t', 'tree']
+        configurator = Configurator(args)
+
+        tree = configurator.get_tree()
+        self.assertIsNotNone(output.getvalue())
+        self.assertEqual(BKTree(Damerau(), configurator.get_frequency_words()).tree, tree.tree)
+
