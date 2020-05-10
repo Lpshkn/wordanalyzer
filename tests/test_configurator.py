@@ -2,6 +2,7 @@
 The tests for the analyzer/arguments_parser.py module
 """
 import io
+import os
 import unittest.mock
 from analyzer.configurator import Configurator
 
@@ -67,3 +68,21 @@ class ArgumentsParserTest(unittest.TestCase):
         configurator = Configurator(args)
 
         self.assertEqual(configurator.get_destination(), 'new_file.txt')
+
+    def test_get_frequency_words_wrong(self):
+        args = ['-s', 'source', '-f', 'frequency']
+        configurator = Configurator(args)
+
+        with self.assertRaises(FileNotFoundError):
+            configurator.get_frequency_words()
+
+    @unittest.mock.patch('sys.stdout', open(os.devnull, 'w'))
+    def test_get_frequency_words_correct(self):
+        args = ['-s', 'sources', '-f', 'frequency']
+
+        configurator = Configurator(args)
+        with open('frequency', 'w') as file:
+            file.write('teststring')
+
+        self.assertEqual(configurator.get_frequency_words(), ['teststring'])
+        os.remove('frequency')
