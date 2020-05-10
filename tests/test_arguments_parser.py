@@ -45,8 +45,3 @@ class ArgumentsParserTest(unittest.TestCase):
         self.assertEqual(parsed.destination, 'destination.txt')
         self.assertEqual(parsed.source, 'source.txt')
         self.assertEqual(parsed.frequency, 'frequency')
-
-    def test_incorrect_input(self):
-        # Type error because the destination is string
-        with self.assertRaises(TypeError):
-            self.parser.parse_args(['-d', 1234])
