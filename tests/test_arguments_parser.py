@@ -1,5 +1,5 @@
 """
-Tests for analyzer/arguments_parser.py module
+The tests for the analyzer/arguments_parser.py module
 """
 import unittest
 import analyzer.arguments_parser as ap
@@ -8,25 +8,30 @@ import analyzer.arguments_parser as ap
 class ArgumentsParserTest(unittest.TestCase):
     def setUp(self) -> None:
         """
-        Parser is instance of ArgumentParser class, contains handled arguments
+        A parser is an instance of the ArgumentParser class containing handled arguments
         """
         self.parser = ap.arguments_parser()
 
     def test_default_values(self):
+        # Pass an empty list
         parsed = self.parser.parse_args([])
 
-        # These parameters haven't default value
+        # These parameters have no default value
         self.assertIsNone(parsed.count)
         self.assertIsNone(parsed.tree)
+        self.assertIsNone(parsed.source)
+        self.assertIsNone(parsed.frequency)
+        self.assertIsNone(parsed.words)
 
+        # These parameters are flags and are false by default
+        self.assertFalse(parsed.clear_word)
+        self.assertFalse(parsed.total_cost)
         self.assertFalse(parsed.verbose)
 
-        # These parameters have default value
+        # These parameters have a default value
         self.assertEqual(parsed.encoding, 'utf-8')
-        self.assertEqual(parsed.destination, ap.DESTINATION_FILE)
-        self.assertEqual(parsed.source, ap.PASSWORDS_FILE)
-        self.assertEqual(parsed.frequency, ap.FREQUENCY_FILE)
-        self.assertEqual(parsed.number_corrected, 4)
+        self.assertEqual(parsed.destination, 'output.txt')
+        self.assertEqual(parsed.number_corrected, 2)
         self.assertEqual(parsed.threshold, 2)
         self.assertEqual(parsed.distance, 1)
         self.assertEqual(parsed.similar_words, 4)
