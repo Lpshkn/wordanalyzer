@@ -51,16 +51,19 @@ class ArgumentsParserTest(unittest.TestCase):
     def test_input_words(self):
         args = ['-w', 'first', 'second', '-f', 'frequency']
         parameters = Configurator(args)._parameters
-        
+
         self.assertEqual(parameters.words, ['first', 'second'])
         self.assertEqual(parameters.frequency, 'frequency')
 
-    def test_correct_input(self):
-        parsed = self.parser.parse_args(['-s', 'source.txt', '--destination', 'destination.txt',
-                                         '--frequency', 'frequency', '-c', '100'])
+    def test_get_correct_words(self):
+        args = ['-w', 'first', 'second', '-f', 'frequency', '-s', 'source']
+        configurator = Configurator(args)
 
-        # Count is int
-        self.assertEqual(parsed.count, 100)
-        self.assertEqual(parsed.destination, 'destination.txt')
-        self.assertEqual(parsed.source, 'source.txt')
-        self.assertEqual(parsed.frequency, 'frequency')
+        # -w flag should cover the -s flag
+        self.assertEqual(configurator.get_words(), ['first', 'second'])
+
+    def test_get_destination(self):
+        args = ['-w', 'first', 'second', '-f', 'frequency', '-d', 'new_file.txt']
+        configurator = Configurator(args)
+
+        self.assertEqual(configurator.get_destination(), 'new_file.txt')

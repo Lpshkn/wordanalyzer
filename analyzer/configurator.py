@@ -115,8 +115,15 @@ class Configurator:
         return parser
 
     def _get_parameters(self, args):
+        """
+        This method gets all parameters from the args of the command line.
+
+        :param args: list of the arguments of the command line
+        :return: parsed arguments
+        """
         parameters = self._parser.parse_args(args)
 
+        # At least one of the parameters must be
         if not (parameters.source or parameters.words):
             self._parser.error('No action requested, add -s/--source or -w/--words')
         if not parameters.frequency:
@@ -124,25 +131,40 @@ class Configurator:
 
         return parameters
 
-    def get_words(self):
+    def get_words(self) -> list:
+        """
+        Method loads the list of the words depending on the flag -w or -s
+
+        :return: the list of words
+        """
         if self._parameters.words:
             return self._parameters.words
 
         words = load_words(self._parameters.source, self._parameters.count, self._parameters.encoding)
         return words
 
-    def get_frequency_words(self):
+    def get_frequency_words(self) -> list:
+        """
+        Method loads frequency words and returns the list of the words
+
+        :return: list of the words
+        """
+
         return load_words(self._parameters.frequency)
 
-    def get_destination(self):
+    def get_destination(self) -> str:
+        """
+        Method returns a filename of a destination file
+
+        :return: filename
+        """
         return self._parameters.destination
 
-    def get_tree(self):
+    def get_tree(self) -> bk.BKTree:
         """
-        This function builds the BK-tree based on frequency words. If bk-tree is already saved in the file,
-        it will be loaded and returned, if filename was passed. BK-tree builds based on Damerau's distance.
+        This method builds the BK-tree based on the frequency words. If the bk-tree is already saved in the file,
+        it will be loaded and returned, if a filename was passed. A BK-tree builds based on the Damerau's distance.
 
-        :param filename: the file where the tree will be saved or from will be loaded
         :return: built BK-tree
         """
 
