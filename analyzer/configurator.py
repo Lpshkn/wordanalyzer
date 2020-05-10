@@ -3,6 +3,7 @@ This module represents a configurator which will set any configurations,
 get and process the parameters received from the command line
 """
 from argparse import ArgumentParser
+from analyzer.load_data import load_words
 
 
 class Configurator:
@@ -17,7 +18,7 @@ class Configurator:
         self._parser = self._get_parser(program_name, description, epilog)
 
         # Get parameters from the arguments received from the command line
-        self._parameters = self._get_parameters()
+        self._parameters = self._get_parameters(args)
 
     @staticmethod
     def _get_parser(program_name: str = None, description: str = None, epilog: str = None) -> ArgumentParser:
@@ -109,5 +110,22 @@ class Configurator:
 
         return parser
 
-    def get_parameters(self):
-        pass
+    def _get_parameters(self, args):
+        parameters = self._parser.parse_args(args)
+
+        if not (parameters.source or parameters.words):
+            self._parser.error('No action requested, add -s/--source or -w/--words')
+        if not parameters.frequency:
+            self._parser.error('To process the words, you must specify a file containing a list of frequency words')
+
+        return parameters
+
+    def get_words(self):
+        if self._parameters.words:
+            return self._parameters.words
+
+        words = load_words(self._parameters.source, self._parameters.count, self._parameters.encoding)
+        return words
+
+    def get_frequency_words(self):
+        return load_words(self._parameters.frequency)
