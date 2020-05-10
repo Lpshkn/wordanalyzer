@@ -8,6 +8,10 @@ from analyzer.configurator import Configurator
 
 
 class ArgumentsParserTest(unittest.TestCase):
+    def setUp(self):
+        args = ['-s', 'source', '-f', 'frequency']
+        self.configurator = Configurator(args)
+
     @unittest.mock.patch("sys.stderr", new_callable=io.StringIO)
     def test_empty_input_words(self, error):
         args = []
@@ -70,19 +74,25 @@ class ArgumentsParserTest(unittest.TestCase):
         self.assertEqual(configurator.get_destination(), 'new_file.txt')
 
     def test_get_frequency_words_wrong(self):
-        args = ['-s', 'source', '-f', 'frequency']
-        configurator = Configurator(args)
-
         with self.assertRaises(FileNotFoundError):
-            configurator.get_frequency_words()
+            self.configurator.get_frequency_words()
 
     @unittest.mock.patch('sys.stdout', open(os.devnull, 'w'))
     def test_get_frequency_words_correct(self):
-        args = ['-s', 'sources', '-f', 'frequency']
-
-        configurator = Configurator(args)
         with open('frequency', 'w') as file:
             file.write('teststring')
 
-        self.assertEqual(configurator.get_frequency_words(), ['teststring'])
+        self.assertEqual(self.configurator.get_frequency_words(), ['teststring'])
         os.remove('frequency')
+
+    def test_get_words_sourcefile_wrong(self):
+        with self.assertRaises(FileNotFoundError):
+            self.configurator.get_words()
+
+    @unittest.mock.patch('sys.stdout', open(os.devnull, 'w'))
+    def test_get_words_sourcefile_correct(self):
+        with open('source', 'w') as file:
+            file.write('teststring')
+
+        self.assertEqual(self.configurator.get_words(), ['teststring'])
+        os.remove('source')
