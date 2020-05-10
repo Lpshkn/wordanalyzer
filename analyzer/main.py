@@ -5,7 +5,12 @@ from analyzer.word_analyzer import WordAnalyzer
 
 
 def main():
-    args = arguments_parser().parse_args(sys.argv[1:])
+    parser = arguments_parser()
+    args = parser.parse_args(sys.argv[1:])
+    if not (args.source or args.words):
+        parser.error('No action requested, add -s/--source or -w/--words')
+    if not args.frequency:
+        parser.error('To process the words, you must specify a file containing a list of frequency words')
 
     if args.words:
         words = args.words

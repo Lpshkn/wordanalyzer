@@ -4,13 +4,6 @@ located in the root directory.
 """
 
 from argparse import ArgumentParser
-from os.path import dirname, join
-
-PROJECT_ROOT = dirname(dirname(__file__))
-DATA_DIRECTORY = join(PROJECT_ROOT, 'data')
-PASSWORDS_FILE = join(DATA_DIRECTORY, 'rockyou.txt')
-FREQUENCY_FILE = join(DATA_DIRECTORY, 'frequency_words.txt')
-DESTINATION_FILE = join(PROJECT_ROOT, 'new_words.txt')
 
 
 def arguments_parser() -> ArgumentParser:
@@ -29,19 +22,17 @@ def arguments_parser() -> ArgumentParser:
 
     parser.add_argument('-s', '--source',
                         help='The source file containing the set of words you need to analyze.',
-                        default=PASSWORDS_FILE,
                         type=str)
 
     parser.add_argument('-f', '--frequency',
                         help="The dictionary ordered by frequency of word usage, which will be used to perform the "
                              "splitting text and correcting incorrect words (if the dictionary parameter -w isn't "
                              "override).",
-                        default=FREQUENCY_FILE,
                         type=str)
 
     parser.add_argument('-d', '--destination',
                         help="The destination file where the processed set of source words will be saved.",
-                        default=DESTINATION_FILE,
+                        default='output.txt',
                         type=str)
 
     parser.add_argument('-c', '--count',
