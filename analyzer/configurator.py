@@ -8,20 +8,29 @@ from argparse import ArgumentParser
 class Configurator:
     def __init__(self, args):
         # Set descriptions of the program
-        self.description = "This program analyzes the source set of words was obtained from the file (-s parameter), " \
+        description = "This program analyzes the source set of words was obtained from the file (-s parameter), " \
                            "clear this set from incorrect symbols, split cleared words to lexemes, then correct " \
                            "them by replacing assumed incorrect words to right words and then will create new set of " \
                            "words and save it to the destination file (-d parameter)."
-        self.program_name = "wordanalyzer"
-        self.epilog = "Lpshkn, 2020"
-        self.parser = self.get_parser()
+        program_name = "wordanalyzer"
+        epilog = "Lpshkn, 2020"
+        self._parser = self._get_parser(program_name, description, epilog)
 
         # Get parameters from the arguments received from the command line
-        self.args = args
-        self.parameters = self.get_parameters(self.args)
+        self._parameters = self._get_parameters()
 
-    def get_parser(self):
-        parser = ArgumentParser(prog=self.program_name, description=self.description, epilog=self.epilog)
+    @staticmethod
+    def _get_parser(program_name: str = None, description: str = None, epilog: str = None) -> ArgumentParser:
+        """
+        Method creates the instance of the ArgumentParser class, adds arguments in here and returns that instance.
+
+        :param program_name: name of the program
+        :param description: description of the program
+        :param epilog: epilog of the program
+        :return: an instance of the ArgumentParser class
+        """
+
+        parser = ArgumentParser(prog=program_name, description=description, epilog=epilog)
 
         parser.add_argument('-s', '--source',
                             help='The source file containing the set of words you need to analyze.',
