@@ -9,14 +9,19 @@ from similarity.damerau import Damerau
 from argparse import ArgumentParser
 from analyzer.load_data import load_words
 
+MODE_COST = 1
+MODE_CLEAR = 2
+MODE_CORRECT = 4
+MODE_VERBOSE = 8
+
 
 class Configurator:
     def __init__(self, args):
         # Set descriptions of the program
         description = "This program analyzes the source set of words was obtained from the file (-s parameter), " \
-                           "clear this set from incorrect symbols, split cleared words to lexemes, then correct " \
-                           "them by replacing assumed incorrect words to right words and then will create new set of " \
-                           "words and save it to the destination file (-d parameter)."
+                      "clear this set from incorrect symbols, split cleared words to lexemes, then correct " \
+                      "them by replacing assumed incorrect words to right words and then will create new set of " \
+                      "words and save it to the destination file (-d parameter)."
         program_name = "wordanalyzer"
         epilog = "Lpshkn, 2020"
         self._parser = self._get_parser(program_name, description, epilog)
@@ -94,13 +99,13 @@ class Configurator:
                             type=int)
 
         parser.add_argument('-cost', '--total-cost',
-                            help="Return summary cost for each word passed to input. If it's specified, another methods "
+                            help="Return summary cost for each word passed to input. If it's specified, other methods "
                                  "will not work.",
                             action='store_true')
 
         parser.add_argument('-clr', '--clear-word',
                             help="Return cleared words from the incorrect symbols depending on the total sum of the word. "
-                                 "If it's specified, another methods will not work. This method replaces -sum option.",
+                                 "If it's specified, another methods will not work. This method replaces -cost option.",
                             action='store_true')
 
         parser.add_argument('-w', '--words',
@@ -202,8 +207,36 @@ class Configurator:
             print("The bk-tree built successfully")
             return tree
 
-    def get_configuration_values(self):
-        pass
+    def get_configuration_values(self) -> dict:
+        """
+        Method returns a dictionary containing all configuration values for some functions
 
-    def get_mode(self):
-        pass
+        :return: dict of the values
+        """
+        values = {
+            'similar_words': self._parameters.similar_words,
+            'distance': self._parameters.distance,
+            'threshold': self._parameters.threshold,
+            'number_corrected': self._parameters.number_corrected
+        }
+        return values
+
+    def get_mode(self) -> int:
+        """
+        This method determines what's mode user specified. It may be CLEAR mode, that means cleared words will be
+        printed into the console, or COST mode, that means cost of the each words will be printed, or CORRECT mode
+        otherwise. That fact is determined by flags "-cost", "-clr" or them absence.
+
+        :return: mode, specified by user
+        """
+        if self._parameters.clear_word:
+            mode = MODE_CLEAR
+        elif self._parameters.total_cost:
+            mode = MODE_COST
+        else:
+            mode = MODE_CORRECT
+
+        if self._parameters.verbose:
+            mode |= MODE_VERBOSE
+
+        return mode
