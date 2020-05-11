@@ -6,12 +6,13 @@ from similarity.damerau import Damerau
 
 class BuildBKTreeTest(unittest.TestCase):
     def setUp(self):
+        self.filename = 'test'
         self.words = ['first', 'second']
         self.distance = Damerau().distance
 
     def tearDown(self):
-        if os.path.isfile('test'):
-            os.remove('test')
+        if os.path.isfile(self.filename):
+            os.remove(self.filename)
 
     def test_build_tree_correct(self):
         self.assertEqual(BuildBKTree.build_tree(self.words).tree, BKTree(self.distance, self.words).tree)
@@ -30,18 +31,15 @@ class BuildBKTreeTest(unittest.TestCase):
             BuildBKTree.save_tree("", BuildBKTree.build_tree(['123']))
 
     def test_save_tree_correct_filename(self):
-        filename = 'test'
-        BuildBKTree.save_tree(filename, BuildBKTree.build_tree(['123']))
+        BuildBKTree.save_tree(self.filename, BuildBKTree.build_tree(['123']))
 
-        self.assertTrue(os.path.isfile(filename))
-        self.assertTrue(os.stat(filename).st_size != 0)
+        self.assertTrue(os.path.isfile(self.filename))
+        self.assertTrue(os.stat(self.filename).st_size != 0)
 
     def test_save_tree_incorrect_tree(self):
-        filename = 'test'
-
         with self.assertRaises(WrongTreeError):
-            BuildBKTree.save_tree(filename, '123')
+            BuildBKTree.save_tree(self.filename, '123')
         with self.assertRaises(WrongTreeError):
-            BuildBKTree.save_tree(filename, [])
+            BuildBKTree.save_tree(self.filename, [])
         with self.assertRaises(WrongTreeError):
             BuildBKTree.save_tree(filename, None)
