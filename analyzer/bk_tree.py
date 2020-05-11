@@ -23,6 +23,8 @@ class BuildBKTree(BKTree):
             raise FileBKTreeError("The file where you're going to save the bk-tree has the incorrect name")
         if not isinstance(tree, BKTree):
             raise WrongTreeError("You're trying to save into the file not a BK-tree object")
+        if os.path.isfile(filename) and os.stat(filename).st_size != 0:
+            raise FileBKTreeError("The file what you specified is not empty. It's unable to write into that file")
 
         with open(filename, 'wb') as file:
             pickle.dump(tree, file)

@@ -37,6 +37,13 @@ class BuildBKTreeTest(unittest.TestCase):
         self.assertTrue(os.path.isfile(self.filename))
         self.assertTrue(os.stat(self.filename).st_size != 0)
 
+    def test_save_tree_not_empty_file(self):
+        with open(self.filename, 'w') as file:
+            file.write('test')
+
+        with self.assertRaises(FileBKTreeError):
+            BuildBKTree.save_tree(self.filename, BuildBKTree.build_tree(['123']))
+
     def test_save_tree_incorrect_tree(self):
         with self.assertRaises(WrongTreeError):
             BuildBKTree.save_tree(self.filename, '123')
