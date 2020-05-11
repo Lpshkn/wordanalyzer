@@ -72,3 +72,12 @@ class BuildBKTreeTest(unittest.TestCase):
 
         with self.assertRaises(WrongTreeError):
             BuildBKTree.load_tree(self.filename)
+
+    def test_tree_correct_work(self):
+        tree1 = BuildBKTree.build_tree(self.words)
+        BuildBKTree.save_tree(self.filename, tree1)
+
+        with open(self.filename, 'rb'):
+            tree2 = BuildBKTree.load_tree(self.filename)
+
+        self.assertEqual(tree1.tree, tree2.tree)
