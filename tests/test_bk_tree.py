@@ -42,4 +42,12 @@ class BuildBKTreeTest(unittest.TestCase):
         with self.assertRaises(WrongTreeError):
             BuildBKTree.save_tree(self.filename, [])
         with self.assertRaises(WrongTreeError):
-            BuildBKTree.save_tree(filename, None)
+            BuildBKTree.save_tree(self.filename, None)
+
+    def test_load_tree_incorrect_filename(self):
+        with self.assertRaises(FileBKTreeError):
+            BuildBKTree.load_tree(self.filename)
+        with self.assertRaises(FileBKTreeError):
+            BuildBKTree.load_tree('')
+        with self.assertRaises(FileBKTreeError):
+            BuildBKTree.load_tree(None)

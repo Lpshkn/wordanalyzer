@@ -2,6 +2,7 @@
 This module implements an interface between the BKTree class and operations with it
 """
 
+import os
 import pickle
 from pybktree import BKTree
 from similarity.damerau import Damerau
@@ -29,7 +30,11 @@ class BuildBKTree(BKTree):
 
     @staticmethod
     def load_tree(filename):
-        tree = pickle.load(filename)
+        if not filename or not os.path.isfile(filename):
+            raise FileBKTreeError("This file of the bk-tree structure doesn't exist")
+
+        with open(filename, 'rb') as file:
+            tree = pickle.load(file)
         return tree
 
 
