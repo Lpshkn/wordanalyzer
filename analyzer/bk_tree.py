@@ -33,8 +33,17 @@ class BuildBKTree(BKTree):
         if not filename or not os.path.isfile(filename):
             raise FileBKTreeError("This file of the bk-tree structure doesn't exist")
 
-        with open(filename, 'rb') as file:
-            tree = pickle.load(file)
+        try:
+            with open(filename, 'rb') as file:
+                tree = pickle.load(file)
+                if not isinstance(tree, BKTree):
+                    raise WrongTreeError("You're trying to load from the file not a BK-tree object")
+
+        except pickle.UnpicklingError:
+            raise FileBKTreeError("This file of the bk-tree structure doesn't contain any bk-tree structure actually")
+        except EOFError:
+            raise FileBKTreeError("The bk-tree file you specified is empty and can't be loaded")
+
         return tree
 
 

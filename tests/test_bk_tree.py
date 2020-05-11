@@ -1,5 +1,6 @@
 import unittest
 import os
+import pickle
 from analyzer.bk_tree import BuildBKTree, BKTree, WordsBKTreeError, FileBKTreeError, WrongTreeError
 from similarity.damerau import Damerau
 
@@ -51,3 +52,23 @@ class BuildBKTreeTest(unittest.TestCase):
             BuildBKTree.load_tree('')
         with self.assertRaises(FileBKTreeError):
             BuildBKTree.load_tree(None)
+
+    def test_load_tree_unpickling_file(self):
+        with open(self.filename, 'w') as file:
+            file.write('test')
+
+        with self.assertRaises(FileBKTreeError):
+            BuildBKTree.load_tree(self.filename)
+
+    def test_load_tree_empty_file(self):
+        open(self.filename, 'w').close()
+
+        with self.assertRaises(FileBKTreeError):
+            BuildBKTree.load_tree(self.filename)
+
+    def test_load_tree_notinstance_file(self):
+        with open(self.filename, 'wb') as file:
+            pickle.dump('teststring', file)
+
+        with self.assertRaises(WrongTreeError):
+            BuildBKTree.load_tree(self.filename)
