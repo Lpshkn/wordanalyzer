@@ -2,10 +2,9 @@
 This module represents a configurator which will set any configurations,
 get and process the parameters received from the command line
 """
-import pickle
 import os
-import pybktree as bk
-from similarity.damerau import Damerau
+import sys
+import analyzer.bk_tree as bk
 from argparse import ArgumentParser
 from analyzer.load_data import load_words
 
@@ -176,36 +175,50 @@ class Configurator:
         # If filename was passed, then the tree will either be loaded or will be built and saved.
         # Else the tree will be build and just returned without saving
         filename = self._parameters.tree
+        frequency_words = self.get_frequency_words()
+        tree = None
 
         if filename:
             if os.path.isfile(filename):
-                with open(filename, 'rb') as file:
-                    if os.stat(filename).st_size == 0:
-                        raise ValueError("File is empty")
-
+                try:
                     print("The bk-tree is loading from {}...".format(filename))
-                    tree = pickle.load(file)
+                    tree = bk.BuildBKTree.load_tree(filename)
+                    print("The bk-tree loaded successfully\n")
+                except bk.FileBKTreeError as e:
+                    print('Error: ' + e.text, file=sys.stderr)
 
-                    if not isinstance(tree, bk.BKTree):
-                        raise TypeError("Was loaded not bk-tree")
-
-                    print("The bk-tree loaded successfully")
-
-                    return tree
+                    try:
+                        print("The bk-tree is building...")
+                        tree = bk.BuildBKTree.build_tree(frequency_words)
+                        print("The bk-tree built successfully\n")
+                    except bk.WordsBKTreeError as e:
+                        print('Error: ' + e.text, file=sys.stderr)
+                        exit(-1)
             else:
-                print("The bk-tree is building...")
-                tree = bk.BKTree(Damerau().distance, self._parameters.frequency)
-                print("The bk-tree is saving to {}...".format(filename))
-                with open(filename, 'wb') as file:
-                    pickle.dump(tree, file)
-
-                print("The bk-tree built and saved successfully")
-                return tree
+                try:
+                    print("The bk-tree is building...")
+                    tree = bk.BuildBKTree.build_tree(frequency_words)
+                    print("The bk-tree built successfully")
+                    print("The bk-tree is saving to {}...".format(filename))
+                    bk.BuildBKTree.save_tree(filename, tree)
+                    print("The bk-tree saved successfully\n")
+                except bk.WordsBKTreeError as e:
+                    print('Error: ' + e.text, file=sys.stderr)
+                    exit(-1)
+                except bk.FileBKTreeError as e:
+                    print('Error: ' + e.text, file=sys.stderr)
+                except bk.WrongTreeError as e:
+                    print('Error: ' + e.text, file=sys.stderr)
         else:
-            print("The bk-tree is building...")
-            tree = bk.BKTree(Damerau().distance, self._parameters.frequency)
-            print("The bk-tree built successfully")
-            return tree
+            try:
+                print("The bk-tree is building...")
+                tree = bk.BuildBKTree.build_tree(frequency_words)
+                print("The bk-tree built successfully")
+            except bk.WordsBKTreeError as e:
+                print('Error: ' + e.text, file=sys.stderr)
+                exit(-1)
+
+        return tree
 
     def get_configuration_values(self) -> dict:
         """
