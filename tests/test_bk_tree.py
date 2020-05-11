@@ -1,6 +1,6 @@
 import unittest
 import os
-from analyzer.bk_tree import BuildBKTree, BKTree, WordsBKTreeError, FileBKTreeError
+from analyzer.bk_tree import BuildBKTree, BKTree, WordsBKTreeError, FileBKTreeError, WrongTreeError
 from similarity.damerau import Damerau
 
 
@@ -35,3 +35,13 @@ class BuildBKTreeTest(unittest.TestCase):
 
         self.assertTrue(os.path.isfile(filename))
         self.assertTrue(os.stat(filename).st_size != 0)
+
+    def test_save_tree_incorrect_tree(self):
+        filename = 'test'
+
+        with self.assertRaises(WrongTreeError):
+            BuildBKTree.save_tree(filename, '123')
+        with self.assertRaises(WrongTreeError):
+            BuildBKTree.save_tree(filename, [])
+        with self.assertRaises(WrongTreeError):
+            BuildBKTree.save_tree(filename, None)

@@ -20,6 +20,8 @@ class BuildBKTree(BKTree):
     def save_tree(filename, tree):
         if not filename:
             raise FileBKTreeError("The file where you're going to save the bk-tree has the incorrect name")
+        if not isinstance(tree, BKTree):
+            raise WrongTreeError("You're trying to save into the file not a BK-tree object")
 
         with open(filename, 'wb') as file:
             pickle.dump(tree, file)
@@ -37,5 +39,10 @@ class WordsBKTreeError(Exception):
 
 
 class FileBKTreeError(Exception):
+    def __init__(self, text):
+        self.text = text
+
+
+class WrongTreeError(Exception):
     def __init__(self, text):
         self.text = text
