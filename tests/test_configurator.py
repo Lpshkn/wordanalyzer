@@ -13,19 +13,22 @@ class ConfiguratorTest(unittest.TestCase):
     def setUp(self):
         self.args = ['-s', 'source', '-f', 'frequency']
         self.args_tree = self.args + ['-t', 'tree']
+        self.source_file = 'source'
+        self.tree_file = 'tree'
+        self.frequency_file = 'frequency'
         self.configurator = Configurator(self.args)
 
-        with open('source', 'w') as self.source:
+        with open(self.source_file, 'w') as self.source:
             self.source.write('teststring')
-        with open('frequency', 'w') as self.frequency:
+        with open(self.frequency_file, 'w') as self.frequency:
             self.frequency.write('teststring')
 
     def tearDown(self):
-        os.remove('source')
-        os.remove('frequency')
+        os.remove(self.source_file)
+        os.remove(self.frequency_file)
 
-        if os.path.isfile('tree'):
-            os.remove('tree')
+        if os.path.isfile(self.tree_file):
+            os.remove(self.tree_file)
 
     @unittest.mock.patch("sys.stderr", new_callable=io.StringIO)
     def test_empty_input_words(self, error):
@@ -112,17 +115,23 @@ class ConfiguratorTest(unittest.TestCase):
         tree = configurator.get_tree()
 
         output_msg = output.getvalue()
-        self.assertEqual(output_msg, "Loading all words from frequency...\n"
+        self.assertEqual(output_msg, f"Loading all words from {self.frequency_file}...\n"
                                      "The bk-tree is building...\n"
                                      "The bk-tree built successfully\n\n")
         self.assertEqual(tree.tree, BKTree(Damerau().distance, configurator.get_frequency_words()).tree)
 
     @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
-    def test_get_tree_without_file(self, output):
-        args = self.args + ['-t', 'tree']
-        configurator = Configurator(args)
-
+    def test_get_tree_without_existing_file_correct_tree(self, output):
+        configurator = Configurator(self.args_tree)
         tree = configurator.get_tree()
-        self.assertIsNotNone(output.getvalue())
+
+        output_msg = output.getvalue()
+        self.assertEqual(output_msg, f"Loading all words from {self.frequency_file}...\n"
+                                     "The bk-tree is building...\n"
+                                     "The bk-tree built successfully\n"
+                                     f"The bk-tree is saving to {self.tree_file}...\n"
+                                     "The bk-tree saved successfully\n\n")
+
+        self.assertTrue(os.path.isfile(self.tree_file))
         self.assertEqual(BKTree(Damerau(), configurator.get_frequency_words()).tree, tree.tree)
 
