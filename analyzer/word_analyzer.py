@@ -3,9 +3,6 @@ This module provides WordAnalyzer class that is a wrapper for words dictionary a
 working with them.
 """
 
-import pickle
-import os
-import pybktree as bk
 import analyzer.configurator as cfg
 from copy import deepcopy
 from analyzer.text_splitter import TextSplitter
@@ -22,6 +19,10 @@ class WordAnalyzer:
         analyzer.tree = configurator.get_tree()
         analyzer.words = configurator.get_words()
         analyzer.mode = configurator.get_mode()
+        analyzer.destination = configurator.get_destination()
+
+        # This flag specifies that's need add extra information with a word when analyzing words
+        analyzer.verbose_file = False
 
         # If the word isn't in the dictionary, then its cost is default_cost
         analyzer.default_cost = 1000
@@ -69,7 +70,7 @@ class WordAnalyzer:
                 if verbose:
                     print('ORIGINAL: ', word, ' CORRECTED: ', new_words)
 
-    def get_total_cost(self, text: str) -> int:
+    def _get_total_cost(self, text: str) -> int:
         """
         Calculate total cost of the text based on cost of the each word
         :param text: the text without spaces
@@ -78,7 +79,7 @@ class WordAnalyzer:
 
         return sum([self.splitter.word_cost.get(word, self.default_cost) for word in self.splitter.split(text)])
 
-    def get_clear_word(self, word: str) -> str:
+    def _get_clear_word(self, word: str) -> str:
         """
         This function iterates through possible combinations of indices, which were obtained from
         get_indices_incorrect_symbols. Function returns the cheapest found word among possible combinations.
@@ -105,7 +106,7 @@ class WordAnalyzer:
             # leet_transform function
             for combination in all_combinations:
                 prepared_str = leet_transform(word, combination)
-                total_cost = self.get_total_cost(prepared_str.lower())
+                total_cost = self._get_total_cost(prepared_str.lower())
                 costs_indexes.append([total_cost, set(combination), prepared_str])
 
             # Sort all indexes sets by their cost
@@ -138,7 +139,7 @@ class WordAnalyzer:
 
         return cleared_word
 
-    def __detect_repeated_word(self, word: str) -> str:
+    def _detect_repeated_word(self, word: str) -> str:
         """
         This method detects that some part is repeated in the word and returns that part.
         If any part is not found, returns empty string.
@@ -167,48 +168,7 @@ class WordAnalyzer:
             if repeat:
                 return part
 
-    def __build_bk_tree(self, filename: str = None) -> bk.BKTree:
-        """
-        This function builds the BK-tree based on frequency words. If bk-tree is already saved in the file,
-        it will be loaded and returned, if filename was passed. BK-tree builds based on Damerau's distance.
-
-        :param filename: the file where the tree will be saved or from will be loaded
-        :return: built BK-tree
-        """
-
-        # If filename was passed, then the tree will either be loaded or will be built and saved.
-        # Else the tree will be build and just returned without saving
-        if filename:
-            if os.path.isfile(filename):
-                with open(filename, 'rb') as file:
-                    if os.stat(filename).st_size == 0:
-                        raise ValueError("File is empty")
-
-                    print("The bk-tree is loading from {}...".format(filename))
-                    tree = pickle.load(file)
-
-                    if not isinstance(tree, bk.BKTree):
-                        raise TypeError("Was loaded not bk-tree")
-
-                    print("The bk-tree loaded successfully")
-
-                    return tree
-            else:
-                print("The bk-tree is building...")
-                tree = bk.BKTree(Damerau().distance, self.frequency_words)
-                print("The bk-tree is saving to {}...".format(filename))
-                with open(filename, 'wb') as file:
-                    pickle.dump(tree, file)
-
-                print("The bk-tree built and saved successfully")
-                return tree
-        else:
-            print("The bk-tree is building...")
-            tree = bk.BKTree(Damerau().distance, self.frequency_words)
-            print("The bk-tree built successfully")
-            return tree
-
-    def __get_similar_words(self, word: str) -> list:
+    def _get_similar_words(self, word: str) -> list:
         """
         This function finds all similar words to passed word depending on the Damerau's distance. Function returns
         only first number_similar_words (by default, 4) words of the most similar words.
@@ -222,14 +182,14 @@ class WordAnalyzer:
 
         found_words = self.tree.find(word, distance)
 
-        arr = [[self.get_total_cost(it[1]), it[1]] for it in found_words]
+        arr = [[self._get_total_cost(it[1]), it[1]] for it in found_words]
         if arr:
             arr = sorted(arr)[:number_similar_words]
             return [it[1] for it in arr]
         else:
             return None
 
-    def get_correct_words(self, word: str) -> set:
+    def _get_correct_words(self, word: str) -> set:
         """
         This function clears passed word, then splits it to some parts and in turn splice these parts into one word,
         trying to find the cheapest for each. How many parts will be spliced is determined by the threshold argument.
@@ -245,9 +205,9 @@ class WordAnalyzer:
         threshold = self.threshold
         number_of_corrected_words = self.number_of_corrected_words
 
-        word = self.get_clear_word(word)
+        word = self._get_clear_word(word)
 
-        repeated_word = self.__detect_repeated_word(word)
+        repeated_word = self._detect_repeated_word(word)
         if repeated_word:
             word = repeated_word
 
@@ -274,7 +234,7 @@ class WordAnalyzer:
             full_words_with_cost = []
             for similar_word in similar_words:
                 full_word = ''.join(parts[:i] + [similar_word] + parts[j:])
-                cost = self.get_total_cost(full_word)
+                cost = self._get_total_cost(full_word)
                 full_words_with_cost.append([cost, full_word])
 
             return full_words_with_cost
@@ -283,7 +243,7 @@ class WordAnalyzer:
         if len(parts) < minimum_parts:
             arr = []
             for part in parts:
-                similar = self.__get_similar_words(part)
+                similar = self._get_similar_words(part)
                 if similar:
                     arr.extend(similar)
 
@@ -298,7 +258,7 @@ class WordAnalyzer:
 
             for j in range(i + minimum_parts, max_range + i + 1):
                 spliced_word = ''.join(parts[i:j])
-                similar_words = self.__get_similar_words(spliced_word)
+                similar_words = self._get_similar_words(spliced_word)
 
                 if similar_words:
                     full_words = replace_correcting_parts(parts, similar_words, (i, j - 1))
