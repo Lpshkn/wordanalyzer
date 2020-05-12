@@ -183,14 +183,14 @@ class Configurator:
                 try:
                     print("The bk-tree is loading from {}...".format(filename))
                     tree = bk.BuildBKTree.load_tree(filename)
-                    print("The bk-tree loaded successfully\n")
+                    print("The bk-tree loaded successfully")
                 except (bk.FileBKTreeError, bk.WrongTreeError) as e:
                     print('Error: ' + e.text, file=sys.stderr)
 
                     try:
                         print("The bk-tree is building...")
                         tree = bk.BuildBKTree.build_tree(frequency_words)
-                        print("The bk-tree built successfully\n")
+                        print("The bk-tree built successfully")
                     except bk.WordsBKTreeError as e:
                         print('Error: ' + e.text, file=sys.stderr)
                         exit(-1)
@@ -201,7 +201,7 @@ class Configurator:
                     print("The bk-tree built successfully")
                     print("The bk-tree is saving to {}...".format(filename))
                     bk.BuildBKTree.save_tree(filename, tree)
-                    print("The bk-tree saved successfully\n")
+                    print("The bk-tree saved successfully")
                 except bk.WordsBKTreeError as e:
                     print('Error: ' + e.text, file=sys.stderr)
                     exit(-1)
@@ -213,7 +213,7 @@ class Configurator:
             try:
                 print("The bk-tree is building...")
                 tree = bk.BuildBKTree.build_tree(frequency_words)
-                print("The bk-tree built successfully\n")
+                print("The bk-tree built successfully")
             except bk.WordsBKTreeError as e:
                 print('Error: ' + e.text, file=sys.stderr)
                 exit(-1)
