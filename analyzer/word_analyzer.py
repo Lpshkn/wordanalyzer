@@ -6,54 +6,68 @@ working with them.
 import pickle
 import os
 import pybktree as bk
-from copy import copy, deepcopy
+import analyzer.configurator as cfg
+from copy import deepcopy
 from analyzer.text_splitter import TextSplitter
 from analyzer.methods import (get_indices_incorrect_symbols, leet_transform, factorize)
 from similarity.damerau import Damerau
 
 
 class WordAnalyzer:
-    def __init__(self, frequency_words: list, filename_tree: str = None,
-                 number_similar_words: int = 4, distance: int = 1, threshold: int = 2,
-                 number_of_corrected_words: int = 2):
-        """
-        :param frequency_words: list of words ordered by frequency usage
-        """
-
-        if not isinstance(frequency_words, (list, tuple)):
-            raise TypeError("List must be list type")
-
-        # Lists can't be empty or None
-        if not frequency_words:
-            raise ValueError("The list of words is empty")
-
-        # It's necessary the each element is str type in the list
-        if not all(isinstance(word, str) for word in frequency_words):
-            raise TypeError("The list of words has a non string type element")
-
-        self.frequency_words = frequency_words
-
-        self.splitter = TextSplitter(frequency_words)
-
-        # Build BK-tree for correcting words
-        self.tree = self.__build_bk_tree(filename_tree)
+    @staticmethod
+    def build(configurator: cfg.Configurator):
+        analyzer = WordAnalyzer()
+        analyzer.frequency_words = configurator.get_frequency_words()
+        analyzer.splitter = TextSplitter(analyzer.frequency_words)
+        analyzer.tree = configurator.get_tree()
+        analyzer.words = configurator.get_words()
+        analyzer.mode = configurator.get_mode()
 
         # If the word isn't in the dictionary, then its cost is default_cost
-        self.default_cost = 1000
+        analyzer.default_cost = 1000
 
         # How many similar words will be returned by get_similar_words method
-        self.number_similar_words = number_similar_words
+        analyzer.number_similar_words = configurator.get_configuration_values()['similar_words']
         # What distance will be used to search for similar words
-        self.distance = distance
+        analyzer.distance = configurator.get_configuration_values()['distance']
         # How many parts will be spliced in the get_correct_words method
-        self.threshold = threshold
+        analyzer.threshold = configurator.get_configuration_values()['threshold']
         # How many words will be returned by get_correct_words method
-        self.number_of_corrected_words = number_of_corrected_words
+        analyzer.number_of_corrected_words = configurator.get_configuration_values()['number_corrected']
 
         # Define dictionary with values like (number: list_of_divisors).
         # There are defined all numbers from 1 to max length of all words.
         # It's necessary to improve efficiency, because divisors won't calculated again for same number
-        self.divisors = dict((number, factorize(number)) for number in range(1, self.splitter.max_len + 1))
+        analyzer.divisors = dict((number, factorize(number)) for number in range(1, analyzer.splitter.max_len + 1))
+
+        return analyzer
+
+    def analyze(self, words: list = None):
+        if words is None:
+            words = self.words
+
+        mode = self.mode
+        verbose = True if (mode ^ cfg.MODE_VERBOSE) < mode else False
+        mode = mode ^ cfg.MODE_VERBOSE if (mode ^ cfg.MODE_VERBOSE) < mode else mode
+
+        if mode == cfg.MODE_COST:
+            print("Counting total cost is beginning...")
+            for word in words:
+                total_cost = self.get_total_cost(word)
+                if verbose:
+                    print('WORD: ', word, ' TOTAL COST: ', total_cost)
+        elif mode == cfg.MODE_CLEAR:
+            print("Clearing words is beginning...")
+            for word in words:
+                new_word = self.get_clear_word(word)
+                if verbose:
+                    print('ORIGINAL: ', word, ' CLEARED: ', new_word)
+        elif mode == cfg.MODE_CORRECT:
+            print("Correcting words is beginning...")
+            for word in words:
+                new_words = self.get_correct_words(word)
+                if verbose:
+                    print('ORIGINAL: ', word, ' CORRECTED: ', new_words)
 
     def get_total_cost(self, text: str) -> int:
         """
@@ -295,31 +309,3 @@ class WordAnalyzer:
             arr.append([0, word])
 
         return set(it[1] for it in arr)
-
-    def set_number_similar_words(self, number: int):
-        if not isinstance(number, int):
-            raise TypeError("Number is not int")
-
-        self.number_similar_words = number
-        return self
-
-    def set_distance(self, distance: int):
-        if not isinstance(distance, int):
-            raise TypeError("distance is not int")
-
-        self.distance = distance
-        return self
-
-    def set_threshold(self, threshold: int):
-        if not isinstance(threshold, int):
-            raise TypeError("threshold is not int")
-
-        self.threshold = threshold
-        return self
-
-    def set_number_of_corrected_words(self, number_of_corrected_words: int):
-        if not isinstance(number_of_corrected_words, int):
-            raise TypeError("number_of_corrected_words is not int")
-
-        self.number_of_corrected_words = number_of_corrected_words
-        return self
