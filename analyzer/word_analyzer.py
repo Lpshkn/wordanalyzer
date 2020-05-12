@@ -6,8 +6,7 @@ working with them.
 import analyzer.configurator as cfg
 from copy import deepcopy
 from analyzer.text_splitter import TextSplitter
-from analyzer.methods import (get_indices_incorrect_symbols, leet_transform, factorize)
-from similarity.damerau import Damerau
+from analyzer.methods import (get_indices_incorrect_symbols, leet_transform, factorize, process_words)
 
 
 class WordAnalyzer:
@@ -43,32 +42,41 @@ class WordAnalyzer:
 
         return analyzer
 
-    def analyze(self, words: list = None):
+    def analyze(self, words: list = None, destination: str = None):
         if words is None:
             words = self.words
+
+        if destination is None:
+            destination = self.destination
 
         mode = self.mode
         verbose = True if (mode ^ cfg.MODE_VERBOSE) < mode else False
         mode = mode ^ cfg.MODE_VERBOSE if (mode ^ cfg.MODE_VERBOSE) < mode else mode
 
         if mode == cfg.MODE_COST:
-            print("Counting total cost is beginning...")
-            for word in words:
-                total_cost = self.get_total_cost(word)
-                if verbose:
-                    print('WORD: ', word, ' TOTAL COST: ', total_cost)
+            verbose_pattern = "word: {}, total cost: {}" if verbose else None
+            process_words(self._get_total_cost, words, destination,
+                          prefix="The total cost calculation is beginning...",
+                          postfix="The total cost calculation was completed successfully",
+                          verbose_pattern=verbose_pattern,
+                          file_pattern="word: {}, total cost: {}")
+
         elif mode == cfg.MODE_CLEAR:
-            print("Clearing words is beginning...")
-            for word in words:
-                new_word = self.get_clear_word(word)
-                if verbose:
-                    print('ORIGINAL: ', word, ' CLEARED: ', new_word)
+            verbose_pattern = "word: {}, cleared word: {}" if verbose else None
+            process_words(self._get_clear_word, words, destination,
+                          prefix="Clearing the words is beginning...",
+                          postfix="Clearing the words was completed successfully",
+                          verbose_pattern=verbose_pattern,
+                          file_pattern="word: {}, cleared word: {}")
+
         elif mode == cfg.MODE_CORRECT:
-            print("Correcting words is beginning...")
-            for word in words:
-                new_words = self.get_correct_words(word)
-                if verbose:
-                    print('ORIGINAL: ', word, ' CORRECTED: ', new_words)
+            verbose_pattern = "word: {}, corrected word: {}" if verbose else None
+            file_pattern = "word: {}, corrected word: {}" if self.verbose_file else None
+            process_words(self._get_correct_words, words, destination,
+                          prefix="Correcting words is beginning...",
+                          postfix="Correcting words was completed successfully",
+                          verbose_pattern=verbose_pattern,
+                          file_pattern=file_pattern)
 
     def _get_total_cost(self, text: str) -> int:
         """
