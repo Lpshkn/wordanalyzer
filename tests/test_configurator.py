@@ -3,6 +3,8 @@ The tests for the analyzer/arguments_parser.py module
 """
 import io
 import os
+import pickle
+import analyzer.bk_tree as bk
 import unittest.mock
 from similarity.damerau import Damerau
 from pybktree import BKTree
@@ -134,4 +136,76 @@ class ConfiguratorTest(unittest.TestCase):
 
         self.assertTrue(os.path.isfile(self.tree_file))
         self.assertEqual(BKTree(Damerau(), configurator.get_frequency_words()).tree, tree.tree)
+        self.assertNotEqual(BKTree(Damerau(), ['abcdrasdsf']).tree, tree.tree)
 
+    @unittest.mock.patch("sys.stderr", new_callable=io.StringIO)
+    @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
+    def test_get_tree_with_existing_empty_file(self, output, err):
+        configurator = Configurator(self.args_tree)
+        file = open(self.tree_file, 'w').close()
+        tree = configurator.get_tree()
+
+        output = output.getvalue()
+        err = err.getvalue()
+        self.assertEqual(output, f"Loading all words from {self.frequency_file}...\n"
+                                 f"The bk-tree is loading from {self.tree_file}...\n"
+                                 "The bk-tree is building...\n"
+                                 "The bk-tree built successfully\n\n")
+        self.assertEqual(err, "Error: The bk-tree file you specified is empty and can't be loaded\n")
+        self.assertEqual(BKTree(Damerau(), configurator.get_frequency_words()).tree, tree.tree)
+        self.assertNotEqual(BKTree(Damerau(), ['abcdrasdsf']).tree, tree.tree)
+
+    @unittest.mock.patch("sys.stderr", new_callable=io.StringIO)
+    @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
+    def test_get_tree_with_existing_not_unpickling_file(self, output, err):
+        configurator = Configurator(self.args_tree)
+        with open(self.tree_file, 'w') as file:
+            file.write("teststring")
+        tree = configurator.get_tree()
+
+        output = output.getvalue()
+        err = err.getvalue()
+        self.assertEqual(output, f"Loading all words from {self.frequency_file}...\n"
+                                 f"The bk-tree is loading from {self.tree_file}...\n"
+                                 "The bk-tree is building...\n"
+                                 "The bk-tree built successfully\n\n")
+        self.assertEqual(err,
+                         "Error: This file of the bk-tree structure doesn't contain any bk-tree structure actually\n")
+        self.assertEqual(BKTree(Damerau(), configurator.get_frequency_words()).tree, tree.tree)
+        self.assertNotEqual(BKTree(Damerau(), ['abcdrasdsf']).tree, tree.tree)
+
+    @unittest.mock.patch("sys.stderr", new_callable=io.StringIO)
+    @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
+    def test_get_tree_with_existing_wrong_pickling_file(self, output, err):
+        configurator = Configurator(self.args_tree)
+        with open(self.tree_file, 'wb') as file:
+            pickle.dump("teststring", file)
+        tree = configurator.get_tree()
+
+        output = output.getvalue()
+        err = err.getvalue()
+        self.assertEqual(output, f"Loading all words from {self.frequency_file}...\n"
+                                 f"The bk-tree is loading from {self.tree_file}...\n"
+                                 "The bk-tree is building...\n"
+                                 "The bk-tree built successfully\n\n")
+        self.assertEqual(err,
+                         "Error: You're trying to load from the file not a BK-tree object\n")
+        self.assertEqual(BKTree(Damerau(), configurator.get_frequency_words()).tree, tree.tree)
+        self.assertNotEqual(BKTree(Damerau(), ['abcdrasdsf']).tree, tree.tree)
+
+    @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
+    def test_get_tree_correct_load(self, output):
+        configurator = Configurator(self.args_tree)
+        tree1 = bk.BuildBKTree.build_tree(["teststring"])
+        with open(self.tree_file, 'wb') as file:
+            pickle.dump(tree1, file)
+
+        tree2 = configurator.get_tree()
+
+        output = output.getvalue()
+        self.assertEqual(output, f"Loading all words from {self.frequency_file}...\n"
+                                 f"The bk-tree is loading from {self.tree_file}...\n"
+                                 "The bk-tree loaded successfully\n\n")
+
+        self.assertEqual(tree1.tree, tree2.tree)
+        self.assertNotEqual(BKTree(Damerau(), ['abcdrasdsf']).tree, tree1.tree)

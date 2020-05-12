@@ -184,7 +184,7 @@ class Configurator:
                     print("The bk-tree is loading from {}...".format(filename))
                     tree = bk.BuildBKTree.load_tree(filename)
                     print("The bk-tree loaded successfully\n")
-                except bk.FileBKTreeError as e:
+                except (bk.FileBKTreeError, bk.WrongTreeError) as e:
                     print('Error: ' + e.text, file=sys.stderr)
 
                     try:
