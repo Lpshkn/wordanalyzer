@@ -213,7 +213,7 @@ class Configurator:
             try:
                 print("The bk-tree is building...")
                 tree = bk.BuildBKTree.build_tree(frequency_words)
-                print("The bk-tree built successfully")
+                print("The bk-tree built successfully\n")
             except bk.WordsBKTreeError as e:
                 print('Error: ' + e.text, file=sys.stderr)
                 exit(-1)

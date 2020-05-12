@@ -9,9 +9,10 @@ from pybktree import BKTree
 from analyzer.configurator import Configurator
 
 
-class ArgumentsParserTest(unittest.TestCase):
+class ConfiguratorTest(unittest.TestCase):
     def setUp(self):
         self.args = ['-s', 'source', '-f', 'frequency']
+        self.args_tree = self.args + ['-t', 'tree']
         self.configurator = Configurator(self.args)
 
         with open('source', 'w') as self.source:
@@ -104,6 +105,17 @@ class ArgumentsParserTest(unittest.TestCase):
     @unittest.mock.patch('sys.stdout', open(os.devnull, 'w'))
     def test_get_words_sourcefile_correct(self):
         self.assertEqual(self.configurator.get_words(), ['teststring'])
+
+    @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
+    def test_get_tree_without_filename(self, output):
+        configurator = Configurator(self.args)
+        tree = configurator.get_tree()
+
+        output_msg = output.getvalue()
+        self.assertEqual(output_msg, "Loading all words from frequency...\n"
+                                     "The bk-tree is building...\n"
+                                     "The bk-tree built successfully\n\n")
+        self.assertEqual(tree.tree, BKTree(Damerau().distance, configurator.get_frequency_words()).tree)
 
     @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
     def test_get_tree_without_file(self, output):
