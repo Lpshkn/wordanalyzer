@@ -43,12 +43,22 @@ class WordAnalyzer:
         return analyzer
 
     def analyze(self, words: list = None, destination: str = None):
+        """
+        This method runs a necessary method depending on the mode that a user chosen. Also, this method determines
+        the text which will be printed in the stdout or a file.
+
+        :param words: a list of words which will be processed. If it isn't specified, that list will be taken
+                      from the Configurator
+        :param destination: the name of a file where you want to save results. If it isn't specified, that filename will
+                            be taken from the Configurator
+        """
         if words is None:
             words = self.words
 
         if destination is None:
             destination = self.destination
 
+        # Calculating mode of work
         mode = self.mode
         verbose = True if (mode ^ cfg.MODE_VERBOSE) < mode else False
         mode = mode ^ cfg.MODE_VERBOSE if (mode ^ cfg.MODE_VERBOSE) < mode else mode
