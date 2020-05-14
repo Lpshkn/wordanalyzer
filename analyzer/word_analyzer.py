@@ -6,7 +6,8 @@ working with them.
 import analyzer.configurator as cfg
 from copy import deepcopy
 from analyzer.text_splitter import TextSplitter
-from analyzer.methods import (get_indices_incorrect_symbols, leet_transform, factorize, process_words)
+from analyzer.methods import (get_indices_incorrect_symbols, leet_transform, factorize, process_words, identify_basics,
+                              convert_flags)
 
 
 class WordAnalyzer:
@@ -59,11 +60,10 @@ class WordAnalyzer:
             destination = self.destination
 
         # Calculating mode of work
-        mode = self.mode
-        verbose = True if (mode ^ cfg.MODE_VERBOSE) < mode else False
-        mode = mode ^ cfg.MODE_VERBOSE if (mode ^ cfg.MODE_VERBOSE) < mode else mode
+        flags = convert_flags(self.mode)
+        verbose = True if cfg.MODE_VERBOSE in flags else False
 
-        if mode == cfg.MODE_COST:
+        if cfg.MODE_COST in flags:
             verbose_pattern = "word: {}, total cost: {}" if verbose else None
             process_words(self._get_total_cost, words, destination,
                           prefix="The total cost calculation is beginning...",
@@ -71,7 +71,7 @@ class WordAnalyzer:
                           verbose_pattern=verbose_pattern,
                           file_pattern="word: {}, total cost: {}")
 
-        elif mode == cfg.MODE_CLEAR:
+        elif cfg.MODE_CLEAR in flags:
             verbose_pattern = "word: {}, cleared word: {}" if verbose else None
             process_words(self._get_clear_word, words, destination,
                           prefix="Clearing the words is beginning...",
@@ -79,10 +79,10 @@ class WordAnalyzer:
                           verbose_pattern=verbose_pattern,
                           file_pattern="word: {}, cleared word: {}")
 
-        elif mode == cfg.MODE_CORRECT:
+        elif cfg.MODE_CORRECT in flags:
             verbose_pattern = "word: {}, corrected word: {}" if verbose else None
             file_pattern = "word: {}, corrected word: {}" if self.verbose_file else None
-            process_words(self._get_correct_words, words, destination,
+            words = process_words(self._get_correct_words, words, destination,
                           prefix="Correcting words is beginning...",
                           postfix="Correcting words was completed successfully",
                           verbose_pattern=verbose_pattern,
