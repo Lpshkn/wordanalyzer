@@ -4,6 +4,8 @@ This module contains functions for processing string, clearing from incorrect sy
 
 import re
 from collections.abc import Iterable
+from nltk.stem import SnowballStemmer
+from analyzer.text_splitter import TextSplitter
 
 
 def leet_transform(word: str, indices: tuple) -> str:
@@ -93,6 +95,8 @@ def process_words(function, words: list, destination: str = None, prefix: str = 
             If it isn't specified, only processed words will be saved.
     :param duplicate: if it's specified and it's True, duplicates won't be deleted
     """
+    processed_words = []
+
     if prefix:
         print(prefix)
 
@@ -104,6 +108,7 @@ def process_words(function, words: list, destination: str = None, prefix: str = 
         if not isinstance(processed, Iterable):
             processed = [processed]
 
+        processed_words.extend(processed)
         for processed_word in processed:
             if verbose_pattern:
                 print(verbose_pattern.format(word, processed_word))
@@ -126,3 +131,48 @@ def process_words(function, words: list, destination: str = None, prefix: str = 
 
     if postfix:
         print(postfix)
+
+    return processed_words
+
+
+def identify_basics(words: list, splitter: TextSplitter, destination: str = None) -> list:
+    """
+    This function identifies the base parts of a word, applies the stemming to them and returns a list of base words.
+    If the destination is specified, then saves the list into this file.
+
+    :param words: a list of words which will be processed
+    :param splitter: an instance of the TextSplitter to split a word to parts
+    :param destination:  a filename that you want to save a list to
+    :return: a list of base words
+    """
+    stemmer = SnowballStemmer('english')
+    file = open(destination, 'a') if destination else None
+    basics = set()
+
+    for word in words:
+        for part in splitter.split(word):
+            part = part.lower()
+            cost = splitter.word_cost.get(part)
+            if cost:
+                basics.add(stemmer.stem(part))
+
+    if file:
+        file.writelines(list(basics))
+
+    return list(basics)
+
+
+def convert_flags(flags: int) -> list:
+    """
+    This method receives a decimal number means flags which a user chose and selects from this number all flags.
+
+    :param flags: a number meaning flags that a user chose
+    :return: a list of flags
+    """
+    convert = []
+    while flags:
+        flag = flags & (~flags + 1)
+        convert.append(flag)
+        flags ^= flag
+
+    return convert
