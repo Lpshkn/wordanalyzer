@@ -2,14 +2,14 @@ import unittest
 import os
 import pickle
 from analyzer.bk_tree import BuildBKTree, BKTree, WordsBKTreeError, FileBKTreeError, WrongTreeError
-from similarity.damerau import Damerau
+from pyxdameraulevenshtein import damerau_levenshtein_distance as distance
 
 
 class BuildBKTreeTest(unittest.TestCase):
     def setUp(self):
         self.filename = 'test'
         self.words = ['first', 'second']
-        self.distance = Damerau().distance
+        self.distance = distance
 
     def tearDown(self):
         if os.path.isfile(self.filename):

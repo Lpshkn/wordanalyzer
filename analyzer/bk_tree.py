@@ -5,7 +5,7 @@ This module implements an interface between the BKTree class and operations with
 import os
 import pickle
 from pybktree import BKTree
-from similarity.damerau import Damerau
+from pyxdameraulevenshtein import damerau_levenshtein_distance as distance
 
 
 class BuildBKTree(BKTree):
@@ -14,7 +14,7 @@ class BuildBKTree(BKTree):
         if not words:
             raise WordsBKTreeError("The passed list of words is empty")
 
-        tree = BuildBKTree(Damerau().distance, words)
+        tree = BuildBKTree(distance, words)
         return tree
 
     @staticmethod

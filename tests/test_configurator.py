@@ -6,7 +6,7 @@ import os
 import pickle
 import analyzer.bk_tree as bk
 import unittest.mock
-from similarity.damerau import Damerau
+from pyxdameraulevenshtein import damerau_levenshtein_distance as distance
 from pybktree import BKTree
 from analyzer.configurator import Configurator
 
@@ -120,7 +120,7 @@ class ConfiguratorTest(unittest.TestCase):
         self.assertEqual(output_msg, f"Loading all words from {self.frequency_file}...\n"
                                      "The bk-tree is building...\n"
                                      "The bk-tree built successfully\n")
-        self.assertEqual(tree.tree, BKTree(Damerau().distance, configurator.get_frequency_words()).tree)
+        self.assertEqual(tree.tree, BKTree(distance, configurator.get_frequency_words()).tree)
 
     @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
     def test_get_tree_without_existing_file_correct_tree(self, output):
@@ -135,8 +135,8 @@ class ConfiguratorTest(unittest.TestCase):
                                      "The bk-tree saved successfully\n")
 
         self.assertTrue(os.path.isfile(self.tree_file))
-        self.assertEqual(BKTree(Damerau(), configurator.get_frequency_words()).tree, tree.tree)
-        self.assertNotEqual(BKTree(Damerau(), ['abcdrasdsf']).tree, tree.tree)
+        self.assertEqual(BKTree(distance, configurator.get_frequency_words()).tree, tree.tree)
+        self.assertNotEqual(BKTree(distance, ['abcdrasdsf']).tree, tree.tree)
 
     @unittest.mock.patch("sys.stderr", new_callable=io.StringIO)
     @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
@@ -152,8 +152,8 @@ class ConfiguratorTest(unittest.TestCase):
                                  "The bk-tree is building...\n"
                                  "The bk-tree built successfully\n")
         self.assertEqual(err, "Error: The bk-tree file you specified is empty and can't be loaded\n")
-        self.assertEqual(BKTree(Damerau(), configurator.get_frequency_words()).tree, tree.tree)
-        self.assertNotEqual(BKTree(Damerau(), ['abcdrasdsf']).tree, tree.tree)
+        self.assertEqual(BKTree(distance, configurator.get_frequency_words()).tree, tree.tree)
+        self.assertNotEqual(BKTree(distance, ['abcdrasdsf']).tree, tree.tree)
 
     @unittest.mock.patch("sys.stderr", new_callable=io.StringIO)
     @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
@@ -171,8 +171,8 @@ class ConfiguratorTest(unittest.TestCase):
                                  "The bk-tree built successfully\n")
         self.assertEqual(err,
                          "Error: This file of the bk-tree structure doesn't contain any bk-tree structure actually\n")
-        self.assertEqual(BKTree(Damerau(), configurator.get_frequency_words()).tree, tree.tree)
-        self.assertNotEqual(BKTree(Damerau(), ['abcdrasdsf']).tree, tree.tree)
+        self.assertEqual(BKTree(distance, configurator.get_frequency_words()).tree, tree.tree)
+        self.assertNotEqual(BKTree(distance, ['abcdrasdsf']).tree, tree.tree)
 
     @unittest.mock.patch("sys.stderr", new_callable=io.StringIO)
     @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
@@ -190,8 +190,8 @@ class ConfiguratorTest(unittest.TestCase):
                                  "The bk-tree built successfully\n")
         self.assertEqual(err,
                          "Error: You're trying to load from the file not a BK-tree object\n")
-        self.assertEqual(BKTree(Damerau(), configurator.get_frequency_words()).tree, tree.tree)
-        self.assertNotEqual(BKTree(Damerau(), ['abcdrasdsf']).tree, tree.tree)
+        self.assertEqual(BKTree(distance, configurator.get_frequency_words()).tree, tree.tree)
+        self.assertNotEqual(BKTree(distance, ['abcdrasdsf']).tree, tree.tree)
 
     @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
     def test_get_tree_correct_load(self, output):
@@ -208,4 +208,4 @@ class ConfiguratorTest(unittest.TestCase):
                                  "The bk-tree loaded successfully\n")
 
         self.assertEqual(tree1.tree, tree2.tree)
-        self.assertNotEqual(BKTree(Damerau(), ['abcdrasdsf']).tree, tree1.tree)
+        self.assertNotEqual(BKTree(distance, ['abcdrasdsf']).tree, tree1.tree)
