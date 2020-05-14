@@ -251,7 +251,7 @@ class WordAnalyzer:
             i, j = indices
             full_words_with_cost = []
             for similar_word in similar_words:
-                full_word = ''.join(parts[:i] + [similar_word] + parts[j:])
+                full_word = ''.join(parts[:i] + [similar_word] + parts[j+1:])
                 cost = self._get_total_cost(full_word)
                 full_words_with_cost.append([cost, full_word])
 
