@@ -11,7 +11,7 @@ from analyzer.load_data import load_words
 MODE_COST = 1
 MODE_CLEAR = 2
 MODE_CORRECT = 4
-MODE_VERBOSE = 8
+MODE_BASIC = 8
 
 
 class Configurator:
@@ -49,11 +49,6 @@ class Configurator:
                             help="The dictionary ordered by frequency of word usage, which will be used to perform the "
                                  "splitting text and correcting incorrect words (if the dictionary parameter -w isn't "
                                  "override).",
-                            type=str)
-
-        parser.add_argument('-d', '--destination',
-                            help="The destination file where the processed set of source words will be saved.",
-                            default='output.txt',
                             type=str)
 
         parser.add_argument('-c', '--count',
@@ -97,15 +92,32 @@ class Configurator:
                             default=2,
                             type=int)
 
+        parser.add_argument('-correct', '--correct',
+                            help="The destination file where the processed set of source words will be saved.",
+                            nargs='?',
+                            const='STDOUT',
+                            type=str)
+
         parser.add_argument('-cost', '--total-cost',
                             help="Return summary cost for each word passed to input. If it's specified, other methods "
                                  "will not work.",
-                            action='store_true')
+                            nargs='?',
+                            const='STDOUT',
+                            type=str)
 
         parser.add_argument('-clr', '--clear-word',
                             help="Return cleared words from the incorrect symbols depending on the total sum of the word. "
                                  "If it's specified, another methods will not work. This method replaces -cost option.",
-                            action='store_true')
+                            nargs='?',
+                            const='STDOUT',
+                            type=str)
+
+        parser.add_argument('-basic', '--base-words',
+                            help="Return the base parts of each word.",
+                            nargs='?',
+                            const='STDOUT',
+                            type=str
+                            )
 
         parser.add_argument('-w', '--words',
                             nargs='+',
@@ -155,14 +167,6 @@ class Configurator:
         """
 
         return load_words(self._parameters.frequency)
-
-    def get_destination(self) -> str:
-        """
-        Method returns a filename of a destination file
-
-        :return: filename
-        """
-        return self._parameters.destination
 
     def get_tree(self) -> bk.BKTree:
         """
@@ -234,7 +238,7 @@ class Configurator:
         }
         return values
 
-    def get_mode(self) -> int:
+    def get_mode(self) -> dict:
         """
         This method determines what's mode user specified. It may be CLEAR mode, that means cleared words will be
         printed into the console, or COST mode, that means cost of the each words will be printed, or CORRECT mode
@@ -242,14 +246,17 @@ class Configurator:
 
         :return: mode, specified by user
         """
+        mode = dict()
         if self._parameters.clear_word:
-            mode = MODE_CLEAR
-        elif self._parameters.total_cost:
-            mode = MODE_COST
-        else:
-            mode = MODE_CORRECT
-
-        if self._parameters.verbose:
-            mode |= MODE_VERBOSE
+            mode[MODE_CLEAR] = self._parameters.clear_word
+        if self._parameters.total_cost:
+            mode[MODE_COST] = self._parameters.total_cost
+        if self._parameters.correct:
+            mode[MODE_CORRECT] = self._parameters.correct
+        if self._parameters.base_words:
+            mode[MODE_BASIC] = self._parameters.base_words
 
         return mode
+
+    def get_verbose(self) -> bool:
+        return self._parameters.verbose
