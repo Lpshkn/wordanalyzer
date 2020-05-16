@@ -309,3 +309,25 @@ class WordAnalyzer:
             arr.append([0, word])
 
         return set(it[1] for it in arr)
+
+    def _get_base_parts(self, word: str) -> set:
+        """
+        This function identifies the base parts of a word, applies the stemming to them and returns a list of base words.
+        If the destination is specified, then saves the list into this file.
+
+        :param words: a list of words which will be processed
+        :param splitter: an instance of the TextSplitter to split a word to parts
+        :param destination:  a filename that you want to save a list to
+        :return: a list of base words
+        """
+        stemmer = SnowballStemmer('english')
+        basics = set()
+        splitter = self.splitter
+
+        for part in splitter.split(word):
+            part = part.lower()
+            cost = splitter.word_cost.get(part)
+            if cost:
+                basics.add(stemmer.stem(part).lower())
+
+        return basics
