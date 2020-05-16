@@ -118,50 +118,23 @@ def delete_duplicates(filename: str):
             file.truncate(0)
             file.writelines(words)
 
-    if postfix:
-        print(postfix)
 
-    return processed_words
+def get_patterns(mode: dict, verbose: bool = False):
+    patterns = {filename: ["word: {}"] if verbose else [] for filename in set(mode.values())}
 
+    filename_modes = collections.defaultdict(list)
+    for _mode, filename in mode.items():
+        filename_modes[filename].append(_mode)
 
-def identify_basics(words: list, splitter: TextSplitter, destination: str = None) -> list:
-    """
-    This function identifies the base parts of a word, applies the stemming to them and returns a list of base words.
-    If the destination is specified, then saves the list into this file.
+    for filename, _mode in filename_modes.items():
+        if cfg.MODE_COST in _mode:
+            patterns[filename].append("cost: {}" if verbose else "{}")
+        if cfg.MODE_CLEAR in _mode:
+            patterns[filename].append("cleared: {}" if verbose else "{}")
+        if cfg.MODE_CORRECT in _mode:
+            patterns[filename].append("corrected: {}" if verbose else "{}")
+        if cfg.MODE_BASIC in _mode:
+            patterns[filename].append("base words: {}" if verbose else "{}")
 
-    :param words: a list of words which will be processed
-    :param splitter: an instance of the TextSplitter to split a word to parts
-    :param destination:  a filename that you want to save a list to
-    :return: a list of base words
-    """
-    stemmer = SnowballStemmer('english')
-    file = open(destination, 'a') if destination else None
-    basics = set()
-
-    for word in words:
-        for part in splitter.split(word):
-            part = part.lower()
-            cost = splitter.word_cost.get(part)
-            if cost:
-                basics.add(stemmer.stem(part))
-
-    if file:
-        file.writelines(list(basics))
-
-    return list(basics)
-
-
-def convert_flags(flags: int) -> list:
-    """
-    This method receives a decimal number means flags which a user chose and selects from this number all flags.
-
-    :param flags: a number meaning flags that a user chose
-    :return: a list of flags
-    """
-    convert = []
-    while flags:
-        flag = flags & (~flags + 1)
-        convert.append(flag)
-        flags ^= flag
-
-    return convert
+    patterns = {filename: ", ".join(pattern) + '\n' for filename, pattern in patterns.items()}
+    return patterns
