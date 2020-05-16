@@ -3,11 +3,13 @@ This module provides WordAnalyzer class that is a wrapper for words dictionary a
 working with them.
 """
 
+import sys
 import analyzer.configurator as cfg
 from copy import deepcopy
 from analyzer.text_splitter import TextSplitter
-from analyzer.methods import (get_indices_incorrect_symbols, leet_transform, factorize, process_words, identify_basics,
-                              convert_flags)
+from analyzer.methods import (get_indices_incorrect_symbols, leet_transform, factorize, process_words, get_patterns,
+                              delete_duplicates)
+from nltk.stem import SnowballStemmer
 
 
 class WordAnalyzer:
@@ -19,7 +21,7 @@ class WordAnalyzer:
         analyzer.tree = configurator.get_tree()
         analyzer.words = configurator.get_words()
         analyzer.mode = configurator.get_mode()
-        analyzer.destination = configurator.get_destination()
+        analyzer.verbose = configurator.get_verbose()
 
         # This flag specifies that's need add extra information with a word when analyzing words
         analyzer.verbose_file = False
@@ -56,37 +58,57 @@ class WordAnalyzer:
         if words is None:
             words = self.words
 
-        if destination is None:
-            destination = self.destination
-
         # Calculating mode of work
-        flags = convert_flags(self.mode)
-        verbose = True if cfg.MODE_VERBOSE in flags else False
+        mode = self.mode
+        verbose = self.verbose
+        patterns = get_patterns(mode, verbose)
+        files = {filename: sys.stdout if filename == "STDOUT" else open(filename, "w")
+                 for filename in set(mode.values())}
 
-        if cfg.MODE_COST in flags:
-            verbose_pattern = "word: {}, total cost: {}" if verbose else None
-            process_words(self._get_total_cost, words, destination,
-                          prefix="The total cost calculation is beginning...",
-                          postfix="The total cost calculation was completed successfully",
-                          verbose_pattern=verbose_pattern,
-                          file_pattern="word: {}, total cost: {}")
+        for word in words:
+            clear = corrects = None
+            arguments = {filename: [] for filename in set(mode.values())}
 
-        elif cfg.MODE_CLEAR in flags:
-            verbose_pattern = "word: {}, cleared word: {}" if verbose else None
-            process_words(self._get_clear_word, words, destination,
-                          prefix="Clearing the words is beginning...",
-                          postfix="Clearing the words was completed successfully",
-                          verbose_pattern=verbose_pattern,
-                          file_pattern="word: {}, cleared word: {}")
+            if cfg.MODE_COST in mode:
+                cost = self._get_total_cost(word)
+                filename = mode[cfg.MODE_COST]
+                arguments[filename].append(cost)
 
-        elif cfg.MODE_CORRECT in flags:
-            verbose_pattern = "word: {}, corrected word: {}" if verbose else None
-            file_pattern = "word: {}, corrected word: {}" if self.verbose_file else None
-            words = process_words(self._get_correct_words, words, destination,
-                          prefix="Correcting words is beginning...",
-                          postfix="Correcting words was completed successfully",
-                          verbose_pattern=verbose_pattern,
-                          file_pattern=file_pattern)
+            if cfg.MODE_CLEAR in mode:
+                clear = self._get_clear_word(word)
+                filename = mode[cfg.MODE_CLEAR]
+                arguments[filename].append(clear)
+
+            if cfg.MODE_CORRECT in mode:
+                if clear:
+                    corrects = self._get_correct_words(word, clear_word=clear)
+                else:
+                    corrects = self._get_correct_words(word)
+
+                filename = mode[cfg.MODE_CORRECT]
+                arguments[filename].append(corrects)
+
+            if cfg.MODE_BASIC in mode:
+                basics = set()
+                if not corrects:
+                    corrects = self._get_correct_words(word, clear_word=clear)
+                for correct in corrects:
+                    basics |= self._get_base_parts(correct)
+
+                filename = mode[cfg.MODE_BASIC]
+                arguments[filename].append(basics)
+
+            for filename in set(mode.values()):
+                pattern = patterns[filename]
+                args = arguments[filename]
+                file = files[filename]
+
+                process_words(word, pattern, args, file, verbose)
+
+        for filename, file in files.items():
+            file.close()
+            if filename != "STDOUT":
+                delete_duplicates(filename)
 
     def _get_total_cost(self, text: str) -> int:
         """
@@ -207,7 +229,7 @@ class WordAnalyzer:
         else:
             return None
 
-    def _get_correct_words(self, word: str) -> set:
+    def _get_correct_words(self, word: str, clear_word: str = None) -> set:
         """
         This function clears passed word, then splits it to some parts and in turn splice these parts into one word,
         trying to find the cheapest for each. How many parts will be spliced is determined by the threshold argument.
@@ -223,7 +245,7 @@ class WordAnalyzer:
         threshold = self.threshold
         number_of_corrected_words = self.number_of_corrected_words
 
-        word = self._get_clear_word(word)
+        word = clear_word if clear_word else self._get_clear_word(word)
 
         repeated_word = self._detect_repeated_word(word)
         if repeated_word:
@@ -251,7 +273,7 @@ class WordAnalyzer:
             i, j = indices
             full_words_with_cost = []
             for similar_word in similar_words:
-                full_word = ''.join(parts[:i] + [similar_word] + parts[j+1:])
+                full_word = ''.join(parts[:i] + [similar_word] + parts[j + 1:])
                 cost = self._get_total_cost(full_word)
                 full_words_with_cost.append([cost, full_word])
 
