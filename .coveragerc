@@ -1,0 +1,5 @@
+[run]
+source = ./analyzer
+
+[html]
+directory = ./htmlcov

@@ -4,3 +4,5 @@ __pycache__
 dist
 build
 wordanalyzer.egg-info
+.coverage
+*htmlcov
