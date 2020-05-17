@@ -33,13 +33,7 @@ class LoadDataTest(unittest.TestCase):
         with self.assertRaises(TypeError):
             load_words(words_filename=None)
 
-        with self.assertRaises(TypeError):
-            load_words(words_filename=[])
-
-        with self.assertRaises(TypeError):
-            load_words(words_filename=1)
-
-        # Check empty file
+    def test_empty_file(self):
         with self.assertRaises(EmptyFileError):
             load_words(self.empty_file)
 
@@ -49,9 +43,6 @@ class LoadDataTest(unittest.TestCase):
             load_words(self.filename, self.count + 1)
         with self.assertRaises(ValueError):
             load_words(self.filename, -1)
-
-        with self.assertRaises(TypeError):
-            load_words(self.filename, "123")
 
         # Count can't be 0
         with self.assertRaises(ValueError):

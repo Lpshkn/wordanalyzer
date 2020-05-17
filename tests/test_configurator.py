@@ -101,19 +101,23 @@ class ConfiguratorTest(unittest.TestCase):
         # -w flag should cover the -s flag
         self.assertEqual(configurator.get_words(), ['first', 'second'])
 
-    def test_get_frequency_words_wrong(self):
+    @unittest.mock.patch('sys.stderr', new_callable=io.StringIO)
+    def test_get_frequency_words_wrong(self, error):
         args = ['-s' 'source', '-f' 'test', '-clr']
-        with self.assertRaises(FileNotFoundError):
+        with self.assertRaises(SystemExit):
             Configurator(args).get_frequency_words()
+        self.assertEqual(error.getvalue(), "Error: this file doesn't exist!\n")
 
     @unittest.mock.patch('sys.stdout', open(os.devnull, 'w'))
     def test_get_frequency_words_correct(self):
         self.assertEqual(self.configurator.get_frequency_words(), ['teststring'])
 
-    def test_get_words_sourcefile_wrong(self):
+    @unittest.mock.patch('sys.stderr', new_callable=io.StringIO)
+    def test_get_words_sourcefile_wrong(self, error):
         args = ['-s' 'test', '-f' 'test', '-basic']
-        with self.assertRaises(FileNotFoundError):
+        with self.assertRaises(SystemExit):
             Configurator(args).get_words()
+        self.assertEqual(error.getvalue(), "Error: this file doesn't exist!\n")
 
     @unittest.mock.patch('sys.stdout', open(os.devnull, 'w'))
     def test_get_words_sourcefile_correct(self):
