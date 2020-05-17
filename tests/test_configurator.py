@@ -60,7 +60,7 @@ class ConfiguratorTest(unittest.TestCase):
                         '-clr/--clear-word or(and) -basic/--base-words' in error.getvalue())
 
     def test_default_values(self):
-        args = ['-w', 'first', 'second', '-f', 'frequency']
+        args = ['-w', 'first', 'second', '-f', 'frequency', '-clr', '-cost', 'cost.txt', '-correct', '-basic', 'base.txt']
         configurator = Configurator(args)
         parameters = configurator._get_parameters(args)
 
@@ -70,40 +70,38 @@ class ConfiguratorTest(unittest.TestCase):
         self.assertIsNone(parameters.source)
 
         # These parameters are flags and are false by default
-        self.assertFalse(parameters.clear_word)
-        self.assertFalse(parameters.total_cost)
         self.assertFalse(parameters.verbose)
+
+        # This are specified modes
+        self.assertEqual(parameters.clear_word, 'STDOUT')
+        self.assertEqual(parameters.total_cost, 'cost.txt')
+        self.assertEqual(parameters.correct, 'STDOUT')
+        self.assertEqual(parameters.base_words, 'base.txt')
 
         # These parameters have a default value
         self.assertEqual(parameters.encoding, 'utf-8')
-        self.assertEqual(parameters.destination, 'output.txt')
         self.assertEqual(parameters.number_corrected, 2)
         self.assertEqual(parameters.threshold, 2)
         self.assertEqual(parameters.distance, 1)
         self.assertEqual(parameters.similar_words, 4)
 
     def test_input_words(self):
-        args = ['-w', 'first', 'second', '-f', 'frequency']
+        args = ['-w', 'first', 'second', '-f', 'frequency', '-correct']
         parameters = Configurator(args)._parameters
 
         self.assertEqual(parameters.words, ['first', 'second'])
         self.assertEqual(parameters.frequency, 'frequency')
+        self.assertEqual(parameters.correct, 'STDOUT')
 
     def test_get_correct_words(self):
-        args = ['-w', 'first', 'second', '-f', 'frequency', '-s', 'source']
+        args = ['-w', 'first', 'second', '-f', 'frequency', '-s', 'source', '-clr']
         configurator = Configurator(args)
 
         # -w flag should cover the -s flag
         self.assertEqual(configurator.get_words(), ['first', 'second'])
 
-    def test_get_destination(self):
-        args = ['-w', 'first', 'second', '-f', 'frequency', '-d', 'new_file.txt']
-        configurator = Configurator(args)
-
-        self.assertEqual(configurator.get_destination(), 'new_file.txt')
-
     def test_get_frequency_words_wrong(self):
-        args = ['-s' 'source', '-f' 'test']
+        args = ['-s' 'source', '-f' 'test', '-clr']
         with self.assertRaises(FileNotFoundError):
             Configurator(args).get_frequency_words()
 
@@ -112,7 +110,7 @@ class ConfiguratorTest(unittest.TestCase):
         self.assertEqual(self.configurator.get_frequency_words(), ['teststring'])
 
     def test_get_words_sourcefile_wrong(self):
-        args = ['-s' 'test', '-f' 'test']
+        args = ['-s' 'test', '-f' 'test', '-basic']
         with self.assertRaises(FileNotFoundError):
             Configurator(args).get_words()
 
@@ -218,3 +216,5 @@ class ConfiguratorTest(unittest.TestCase):
 
         self.assertEqual(tree1.tree, tree2.tree)
         self.assertNotEqual(BKTree(distance, ['abcdrasdsf']).tree, tree1.tree)
+
+
