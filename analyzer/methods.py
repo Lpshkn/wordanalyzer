@@ -68,13 +68,13 @@ def factorize(number: int) -> list:
     :param number: the number for which you want to find divisors
     :return: list of divisors
     """
-
     divisors = []
     divisor = 1
-    while divisor < number:
-        if number % divisor == 0:
-            divisors.append(divisor)
-        divisor += 1
+    if number:
+        while divisor < number:
+            if number % divisor == 0:
+                divisors.append(divisor)
+            divisor += 1
     return divisors
 
 

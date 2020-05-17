@@ -9,6 +9,7 @@ class LeetTransformTest(unittest.TestCase):
     """
     Tests for leet_transform function
     """
+
     def test_correct_input(self):
         # Replace all leet characters
         self.assertEqual(methods.leet_transform('Th1$is0nmyl3@p', [2, 3, 6, 11, 12]), 'Thisisonmyleap')
@@ -68,20 +69,19 @@ class GetIndicesIncorrectSymbolsTest(unittest.TestCase):
             methods.get_indices_incorrect_symbols([])
 
 
-class GetAllCombinationsTest(unittest.TestCase):
+class FactorizeTest(unittest.TestCase):
     """
     Tests for get_all_combinations function
     """
+
     def test_correct_input(self):
-        self.assertEqual(methods.get_all_combinations([]), [])
-        self.assertEqual(methods.get_all_combinations([1, 2, 3]),
-                         [(1,), (2,), (3,), (1, 2), (1, 3), (2, 3), (1, 2, 3)])
-        self.assertEqual(methods.get_all_combinations([1]), [(1,)])
+        self.assertEqual(methods.factorize(-100), [])
+        self.assertEqual(methods.factorize(0), [])
+        self.assertEqual(methods.factorize(1), [])
+        self.assertEqual(methods.factorize(2), [1])
+        self.assertEqual(methods.factorize(10), [1, 2, 5])
+        self.assertEqual(methods.factorize(3453), [1, 3, 1151])
+        self.assertEqual(methods.factorize(4354), [1, 2, 7, 14, 311, 622, 2177])
 
     def test_incorrect_input(self):
-        with self.assertRaises(TypeError):
-            methods.get_all_combinations(None)
-        with self.assertRaises(TypeError):
-            methods.get_all_combinations([1, 'str'])
-        with self.assertRaises(TypeError):
-            methods.get_all_combinations(1)
+        self.assertEqual(methods.factorize(None), [])
