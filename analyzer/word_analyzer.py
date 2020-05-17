@@ -16,10 +16,10 @@ class WordAnalyzer:
     @staticmethod
     def build(configurator: cfg.Configurator):
         analyzer = WordAnalyzer()
-        analyzer.frequency_words = configurator.get_frequency_words()
+        analyzer.frequency_words = configurator.get_frequency_words(verbose=True)
         analyzer.splitter = TextSplitter(analyzer.frequency_words)
         analyzer.tree = configurator.get_tree()
-        analyzer.words = configurator.get_words()
+        analyzer.words = configurator.get_words(verbose=True)
         analyzer.mode = configurator.get_mode()
         analyzer.verbose = configurator.get_verbose()
 

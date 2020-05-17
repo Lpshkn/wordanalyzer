@@ -150,7 +150,7 @@ class Configurator:
 
         return parameters
 
-    def get_words(self) -> list:
+    def get_words(self, verbose: bool = False) -> list:
         """
         Method loads the list of the words depending on the flag -w or -s
 
@@ -159,16 +159,23 @@ class Configurator:
         if self._parameters.words:
             return self._parameters.words
 
+        if verbose:
+            if self._parameters.count:
+                print(f"Loading {self._parameters.count} words from {self._parameters.source}...")
+            else:
+                print(f"Loading all words from {self._parameters.source}...")
+
         words = load_words(self._parameters.source, self._parameters.count, self._parameters.encoding)
         return words
 
-    def get_frequency_words(self) -> list:
+    def get_frequency_words(self, verbose: bool = False) -> list:
         """
         Method loads frequency words and returns the list of the words
 
         :return: list of the words
         """
-
+        if verbose:
+            print(f"Loading all frequency words from {self._parameters.frequency}...")
         return load_words(self._parameters.frequency)
 
     def get_tree(self) -> bk.BKTree:

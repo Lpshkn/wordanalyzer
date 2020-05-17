@@ -125,8 +125,7 @@ class ConfiguratorTest(unittest.TestCase):
         tree = configurator.get_tree()
 
         output_msg = output.getvalue()
-        self.assertEqual(output_msg, f"Loading all words from {self.frequency_file}...\n"
-                                     "The bk-tree is building...\n"
+        self.assertEqual(output_msg, "The bk-tree is building...\n"
                                      "The bk-tree built successfully\n")
         self.assertEqual(tree.tree, BKTree(distance, configurator.get_frequency_words()).tree)
 
@@ -136,8 +135,7 @@ class ConfiguratorTest(unittest.TestCase):
         tree = configurator.get_tree()
 
         output_msg = output.getvalue()
-        self.assertEqual(output_msg, f"Loading all words from {self.frequency_file}...\n"
-                                     "The bk-tree is building...\n"
+        self.assertEqual(output_msg, "The bk-tree is building...\n"
                                      "The bk-tree built successfully\n"
                                      f"The bk-tree is saving to {self.tree_file}...\n"
                                      "The bk-tree saved successfully\n")
@@ -155,8 +153,7 @@ class ConfiguratorTest(unittest.TestCase):
 
         output = output.getvalue()
         err = err.getvalue()
-        self.assertEqual(output, f"Loading all words from {self.frequency_file}...\n"
-                                 f"The bk-tree is loading from {self.tree_file}...\n"
+        self.assertEqual(output, f"The bk-tree is loading from {self.tree_file}...\n"
                                  "The bk-tree is building...\n"
                                  "The bk-tree built successfully\n")
         self.assertEqual(err, "Error: The bk-tree file you specified is empty and can't be loaded\n")
@@ -173,8 +170,7 @@ class ConfiguratorTest(unittest.TestCase):
 
         output = output.getvalue()
         err = err.getvalue()
-        self.assertEqual(output, f"Loading all words from {self.frequency_file}...\n"
-                                 f"The bk-tree is loading from {self.tree_file}...\n"
+        self.assertEqual(output, f"The bk-tree is loading from {self.tree_file}...\n"
                                  "The bk-tree is building...\n"
                                  "The bk-tree built successfully\n")
         self.assertEqual(err,
@@ -192,8 +188,7 @@ class ConfiguratorTest(unittest.TestCase):
 
         output = output.getvalue()
         err = err.getvalue()
-        self.assertEqual(output, f"Loading all words from {self.frequency_file}...\n"
-                                 f"The bk-tree is loading from {self.tree_file}...\n"
+        self.assertEqual(output, f"The bk-tree is loading from {self.tree_file}...\n"
                                  "The bk-tree is building...\n"
                                  "The bk-tree built successfully\n")
         self.assertEqual(err,
@@ -211,8 +206,7 @@ class ConfiguratorTest(unittest.TestCase):
         tree2 = configurator.get_tree()
 
         output = output.getvalue()
-        self.assertEqual(output, f"Loading all words from {self.frequency_file}...\n"
-                                 f"The bk-tree is loading from {self.tree_file}...\n"
+        self.assertEqual(output, f"The bk-tree is loading from {self.tree_file}...\n"
                                  "The bk-tree loaded successfully\n")
 
         self.assertEqual(tree1.tree, tree2.tree)
