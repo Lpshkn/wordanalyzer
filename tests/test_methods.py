@@ -181,3 +181,22 @@ class PrintResultsTest(unittest.TestCase):
         pattern = "{}, {}"
         with self.assertRaises(TypeError):
             methods.print_results('', pattern, args, "test", True)
+
+
+class DeleteDuplicatesTest(unittest.TestCase):
+    def setUp(self):
+        self.filename = 'test.txt'
+
+    def tearDown(self):
+        if os.path.isfile(self.filename):
+            os.remove(self.filename)
+
+    def test_correct_input(self):
+        words = ['test', 'test', 'first', 'second', 'first']
+        with open(self.filename, 'w') as file:
+            for word in words:
+                file.write(word + '\n')
+
+        methods.delete_duplicates(self.filename)
+        with open(self.filename, 'r') as file:
+            self.assertEqual(file.readlines(), ['first\n', 'second\n', 'test\n'])

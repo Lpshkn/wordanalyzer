@@ -3,6 +3,7 @@ This module contains functions for processing string, clearing from incorrect sy
 """
 
 import re
+import os
 import collections
 import analyzer.configurator as cfg
 import _io
@@ -126,10 +127,11 @@ def print_results(word: str, pattern: str, args: list, file, verbose: bool = Fal
 
 
 def delete_duplicates(filename: str):
-    if filename:
-        with open(filename, 'r+') as file:
+    if filename and os.path.isfile(filename):
+        with open(filename, 'r') as file:
             words = set(word.lower() for word in file.readlines())
-            file.truncate(0)
+            words = list(sorted(words))
+        with open(filename, 'w') as file:
             file.writelines(words)
 
 
