@@ -7,7 +7,7 @@ import sys
 import analyzer.configurator as cfg
 from copy import deepcopy
 from analyzer.text_splitter import TextSplitter
-from analyzer.methods import (get_indices_incorrect_symbols, leet_transform, factorize, process_words, get_patterns,
+from analyzer.methods import (get_indices_incorrect_symbols, leet_transform, factorize, print_results, get_patterns,
                               delete_duplicates)
 from nltk.stem import SnowballStemmer
 
@@ -103,7 +103,7 @@ class WordAnalyzer:
                 args = arguments[filename]
                 file = files[filename]
 
-                process_words(word, pattern, args, file, verbose)
+                print_results(word, pattern, args, file, verbose)
 
         for filename, file in files.items():
             file.close()

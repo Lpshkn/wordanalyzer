@@ -78,7 +78,7 @@ def factorize(number: int) -> list:
     return divisors
 
 
-def process_words(word: str, pattern: str, args: list, file, verbose: bool = False):
+def print_results(word: str, pattern: str, args: list, file, verbose: bool = False):
     """
     This function applies the passed function to the list of words, then processes these words and prints all results
     in the command line or/and saves to the file if necessary. All preferences are set by the passed arguments.
