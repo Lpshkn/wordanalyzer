@@ -6,7 +6,7 @@ import os
 import sys
 import analyzer.bk_tree as bk
 from argparse import ArgumentParser
-from analyzer.load_data import load_words
+from analyzer.load_data import load_words, EmptyFileError
 
 MODE_COST = 1
 MODE_CLEAR = 2
@@ -150,6 +150,22 @@ class Configurator:
 
         return parameters
 
+    @staticmethod
+    def _load_words(filename: str, count: int = None, encoding: str = None, prefix: str = None, postfix: str = None):
+        if prefix:
+            print(prefix)
+
+        try:
+            words = load_words(filename, count, encoding)
+        except (TypeError, FileNotFoundError, EmptyFileError, ValueError) as e:
+            print(str(e), file=sys.stderr)
+            exit(-1)
+
+        if postfix:
+            print(postfix)
+
+        return words
+
     def get_words(self, verbose: bool = False) -> list:
         """
         Method loads the list of the words depending on the flag -w or -s
@@ -159,13 +175,15 @@ class Configurator:
         if self._parameters.words:
             return self._parameters.words
 
+        prefix = None
         if verbose:
             if self._parameters.count:
-                print(f"Loading {self._parameters.count} words from {self._parameters.source}...")
+                prefix = f"Loading {self._parameters.count} words from {self._parameters.source}..."
             else:
-                print(f"Loading all words from {self._parameters.source}...")
+                prefix = f"Loading all words from {self._parameters.source}..."
 
-        words = load_words(self._parameters.source, self._parameters.count, self._parameters.encoding)
+        words = self._load_words(filename=self._parameters.source, count=self._parameters.count,
+                                 encoding=self._parameters.encoding, prefix=prefix)
         return words
 
     def get_frequency_words(self, verbose: bool = False) -> list:
@@ -174,9 +192,12 @@ class Configurator:
 
         :return: list of the words
         """
+        prefix = None
         if verbose:
             print(f"Loading all frequency words from {self._parameters.frequency}...")
-        return load_words(self._parameters.frequency)
+
+        words = self._load_words(filename=self._parameters.frequency, prefix=prefix)
+        return words
 
     def get_tree(self) -> bk.BKTree:
         """
