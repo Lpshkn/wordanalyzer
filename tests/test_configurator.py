@@ -6,6 +6,7 @@ import os
 import pickle
 import analyzer.bk_tree as bk
 import unittest.mock
+import analyzer.configurator as cfg
 from pyxdameraulevenshtein import damerau_levenshtein_distance as distance
 from pybktree import BKTree
 from analyzer.configurator import Configurator
@@ -217,4 +218,19 @@ class ConfiguratorTest(unittest.TestCase):
         self.assertEqual(tree1.tree, tree2.tree)
         self.assertNotEqual(BKTree(distance, ['abcdrasdsf']).tree, tree1.tree)
 
+    def test_get_configuration_values(self):
+        values = self.configurator.get_configuration_values()
+        self.assertEqual(values['similar_words'], 4)
+        self.assertEqual(values['distance'], 1)
+        self.assertEqual(values['threshold'], 2)
+        self.assertEqual(values['number_corrected'], 2)
 
+    def test_get_mode(self):
+        args = ['-w', 'word', '-f', 'frequency', '-clr', '-cost', 'cost.txt', '-basic']
+        configurator = Configurator(args)
+        mode = configurator.get_mode()
+
+        self.assertEqual(mode.get(cfg.MODE_CLEAR), 'STDOUT')
+        self.assertEqual(mode.get(cfg.MODE_COST), 'cost.txt')
+        self.assertEqual(mode.get(cfg.MODE_BASIC), 'STDOUT')
+        self.assertIsNone(mode.get(cfg.MODE_CORRECT))
