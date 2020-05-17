@@ -5,6 +5,7 @@ This module contains functions for processing string, clearing from incorrect sy
 import re
 import collections
 import analyzer.configurator as cfg
+import _io
 from collections.abc import Iterable
 
 
@@ -83,6 +84,21 @@ def print_results(word: str, pattern: str, args: list, file, verbose: bool = Fal
     This function applies the passed function to the list of words, then processes these words and prints all results
     in the command line or/and saves to the file if necessary. All preferences are set by the passed arguments.
     """
+    count_brackets = len(re.findall(r'{\d*}', pattern))
+    count_args = len(args) + 1 if verbose else len(args)
+
+    if not isinstance(file, _io.TextIOWrapper):
+        raise TypeError(f"Error: The file \"{file}\" is not a file")
+
+    word = word if word else "NONE"
+
+    if count_args < count_brackets:
+        args = args[:] + [None for i in range(count_brackets - count_args)]
+    elif count_args > count_brackets:
+        raise ValueError("Error: The number of the brackets is less than the number of the arguments")
+
+    args = [arg if arg else 'NONE' for arg in args]
+
     if verbose:
         if len(args) == 1:
             for arg in args:
@@ -92,7 +108,6 @@ def print_results(word: str, pattern: str, args: list, file, verbose: bool = Fal
                 else:
                     file.write(pattern.format(word, arg))
         else:
-            args = [arg if arg else 'NONE' for arg in args]
             file.write(pattern.format(word, *args))
     else:
         if len(args) == 1:
@@ -106,7 +121,6 @@ def print_results(word: str, pattern: str, args: list, file, verbose: bool = Fal
                 else:
                     file.write(pattern.format(arg))
         else:
-            args = [arg if arg else 'NONE' for arg in args]
             file.write(pattern.format(*args))
     file.flush()
 
