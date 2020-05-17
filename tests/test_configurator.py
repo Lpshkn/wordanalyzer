@@ -13,7 +13,7 @@ from analyzer.configurator import Configurator
 
 class ConfiguratorTest(unittest.TestCase):
     def setUp(self):
-        self.args = ['-s', 'source', '-f', 'frequency']
+        self.args = ['-s', 'source', '-f', 'frequency', '-clr']
         self.args_tree = self.args + ['-t', 'tree']
         self.source_file = 'source'
         self.tree_file = 'tree'
@@ -49,6 +49,15 @@ class ConfiguratorTest(unittest.TestCase):
 
         # Check that this error is what we expected
         self.assertTrue("you must specify a file containing a list of frequency words" in error.getvalue())
+
+    @unittest.mock.patch("sys.stderr", new_callable=io.StringIO)
+    def test_no_mode_specified(self, error):
+        args = ['-w' 'word', '-f', 'frequency']
+        with self.assertRaises(SystemExit):
+            configurator = Configurator(args)
+
+        self.assertTrue('No mode specified, add -correct/--correct or(and) -cost/--total-cost or(and) '
+                        '-clr/--clear-word or(and) -basic/--base-words' in error.getvalue())
 
     def test_default_values(self):
         args = ['-w', 'first', 'second', '-f', 'frequency']

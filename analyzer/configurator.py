@@ -144,6 +144,9 @@ class Configurator:
             self._parser.error('No action requested, add -s/--source or -w/--words')
         if not parameters.frequency:
             self._parser.error('To process the words, you must specify a file containing a list of frequency words')
+        if not (parameters.correct or parameters.base_words or parameters.clear_word or parameters.total_cost):
+            self._parser.error('No mode specified, add -correct/--correct or(and) -cost/--total-cost '
+                               'or(and) -clr/--clear-word or(and) -basic/--base-words')
 
         return parameters
 
