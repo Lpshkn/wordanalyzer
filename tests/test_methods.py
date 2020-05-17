@@ -4,6 +4,7 @@ Tests for analyzer/methods.py module
 import unittest
 import os
 import analyzer.methods as methods
+import analyzer.configurator as cfg
 
 
 class LeetTransformTest(unittest.TestCase):
@@ -200,3 +201,32 @@ class DeleteDuplicatesTest(unittest.TestCase):
         methods.delete_duplicates(self.filename)
         with open(self.filename, 'r') as file:
             self.assertEqual(file.readlines(), ['first\n', 'second\n', 'test\n'])
+
+
+class GetPatternsTest(unittest.TestCase):
+    def setUp(self):
+        self.filename = 'test.txt'
+
+    def tearDown(self):
+        if os.path.isfile(self.filename):
+            os.remove(self.filename)
+
+    def test_correct_input(self):
+        mode = {cfg.MODE_CORRECT: 'correct', cfg.MODE_BASIC: 'STDOUT', cfg.MODE_CLEAR: 'STDOUT'}
+        patterns = methods.get_patterns(mode)
+        self.assertEqual(patterns['correct'], '{}\n')
+        self.assertEqual(patterns['STDOUT'], '{}, {}\n')
+
+        mode = {cfg.MODE_CORRECT: 'STDOUT', cfg.MODE_BASIC: 'STDOUT', cfg.MODE_CLEAR: 'STDOUT', cfg.MODE_COST: 'STDOUT'}
+        patterns = methods.get_patterns(mode, verbose=True)
+        self.assertEqual(patterns['STDOUT'], 'word: {}, cost: {}, cleared: {}, corrected: {}, base words: {}\n')
+
+    def test_incorrect_input(self):
+        mode = {0: 'STDOUT', cfg.MODE_COST: 'STDOUT'}
+        patterns = methods.get_patterns(mode)
+        self.assertEqual(patterns['STDOUT'], '{}\n')
+
+    def test_empty_input(self):
+        mode = {}
+        patterns = methods.get_patterns(mode)
+        self.assertEqual(patterns, '')

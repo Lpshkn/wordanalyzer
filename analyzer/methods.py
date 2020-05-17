@@ -152,5 +152,8 @@ def get_patterns(mode: dict, verbose: bool = False):
         if cfg.MODE_BASIC in _mode:
             patterns[filename].append("base words: {}" if verbose else "{}")
 
-    patterns = {filename: ", ".join(pattern) + '\n' for filename, pattern in patterns.items()}
+    if patterns:
+        patterns = {filename: ", ".join(pattern) + '\n' for filename, pattern in patterns.items()}
+    else:
+        patterns = ""
     return patterns
