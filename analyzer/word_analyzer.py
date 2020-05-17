@@ -45,7 +45,7 @@ class WordAnalyzer:
 
         return analyzer
 
-    def analyze(self, words: list = None, destination: str = None):
+    def analyze(self, words: list = None):
         """
         This method runs a necessary method depending on the mode that a user chosen. Also, this method determines
         the text which will be printed in the stdout or a file.

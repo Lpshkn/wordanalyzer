@@ -21,13 +21,13 @@ def load_words(words_filename: str, count: int = None, encoding: str = 'utf-8') 
         raise TypeError("That type isn't string!")
 
     if not os.path.isfile(words_filename):
-        raise FileNotFoundError("Error: this file doesn't exist!")
+        raise FileNotFoundError(f"Error: this file: \"{words_filename}\" doesn't exist!")
 
     if stat(words_filename).st_size == 0:
-        raise EmptyFileError("Error: The specified file is empty!")
+        raise EmptyFileError(f"Error: The specified file: \"{words_filename}\" is empty!")
 
-    if count == 0:
-        raise ValueError("Error: The number of words that you want to load can't be 0")
+    if count is not None and count <= 0:
+        raise ValueError("Error: The number of words that you want to load can't be 0 and less")
 
     with codecs.open(words_filename, 'r', encoding) as f:
         data = f.read().splitlines()

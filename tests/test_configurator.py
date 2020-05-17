@@ -106,7 +106,7 @@ class ConfiguratorTest(unittest.TestCase):
         args = ['-s' 'source', '-f' 'test', '-clr']
         with self.assertRaises(SystemExit):
             Configurator(args).get_frequency_words()
-        self.assertEqual(error.getvalue(), "Error: this file doesn't exist!\n")
+        self.assertEqual(error.getvalue(), f"Error: this file: \"{'test'}\" doesn't exist!\n")
 
     @unittest.mock.patch('sys.stdout', open(os.devnull, 'w'))
     def test_get_frequency_words_correct(self):
@@ -117,7 +117,7 @@ class ConfiguratorTest(unittest.TestCase):
         args = ['-s' 'test', '-f' 'test', '-basic']
         with self.assertRaises(SystemExit):
             Configurator(args).get_words()
-        self.assertEqual(error.getvalue(), "Error: this file doesn't exist!\n")
+        self.assertEqual(error.getvalue(), f"Error: this file: \"{'test'}\" doesn't exist!\n")
 
     @unittest.mock.patch('sys.stdout', open(os.devnull, 'w'))
     def test_get_words_sourcefile_correct(self):
