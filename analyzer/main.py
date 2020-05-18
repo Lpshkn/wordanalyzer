@@ -1,6 +1,6 @@
 import sys
-from analyzer.configurator import Configurator
-from analyzer.word_analyzer import WordAnalyzer
+from analyzer.lib.configurator import Configurator
+from analyzer.lib.word_analyzer import WordAnalyzer
 
 
 def main():

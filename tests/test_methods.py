@@ -3,8 +3,8 @@ Tests for analyzer/methods.py module
 """
 import unittest
 import os
-import analyzer.methods as methods
-import analyzer.configurator as cfg
+import analyzer.lib.methods as methods
+import analyzer.lib.configurator as cfg
 
 
 class LeetTransformTest(unittest.TestCase):

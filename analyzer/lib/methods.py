@@ -5,7 +5,7 @@ This module contains functions for processing string, clearing from incorrect sy
 import re
 import os
 import collections
-import analyzer.configurator as cfg
+import analyzer.lib.configurator as cfg
 import _io
 from collections.abc import Iterable
 

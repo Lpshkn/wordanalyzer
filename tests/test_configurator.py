@@ -4,12 +4,12 @@ The tests for the analyzer/arguments_parser.py module
 import io
 import os
 import pickle
-import analyzer.bk_tree as bk
+import analyzer.lib.bk_tree as bk
 import unittest.mock
-import analyzer.configurator as cfg
+import analyzer.lib.configurator as cfg
 from pyxdameraulevenshtein import damerau_levenshtein_distance as distance
 from pybktree import BKTree
-from analyzer.configurator import Configurator
+from analyzer.lib.configurator import Configurator
 
 
 class ConfiguratorTest(unittest.TestCase):

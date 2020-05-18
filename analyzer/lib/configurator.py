@@ -4,9 +4,9 @@ get and process the parameters received from the command line
 """
 import os
 import sys
-import analyzer.bk_tree as bk
+import analyzer.lib.bk_tree as bk
 from argparse import ArgumentParser
-from analyzer.load_data import load_words, EmptyFileError
+from analyzer.lib.load_data import load_words, EmptyFileError
 
 MODE_COST = 1
 MODE_CLEAR = 2

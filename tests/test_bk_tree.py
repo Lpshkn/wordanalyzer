@@ -1,7 +1,7 @@
 import unittest
 import os
 import pickle
-from analyzer.bk_tree import BuildBKTree, BKTree, WordsBKTreeError, FileBKTreeError, WrongTreeError
+from analyzer.lib.bk_tree import BuildBKTree, BKTree, WordsBKTreeError, FileBKTreeError, WrongTreeError
 from pyxdameraulevenshtein import damerau_levenshtein_distance as distance
 
 

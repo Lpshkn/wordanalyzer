@@ -3,8 +3,8 @@ Tests for analyzer/word_analyzer.py module
 """
 import unittest.mock
 import os
-import analyzer.configurator as cfg
-from analyzer.word_analyzer import WordAnalyzer
+import analyzer.lib.configurator as cfg
+from analyzer.lib.word_analyzer import WordAnalyzer
 from math import log
 
 

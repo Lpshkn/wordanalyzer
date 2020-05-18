@@ -3,7 +3,7 @@ Tests for analyzer/load_data.py module
 """
 
 import unittest
-from analyzer.load_data import load_words, EmptyFileError
+from analyzer.lib.load_data import load_words, EmptyFileError
 import os
 
 

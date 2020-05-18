@@ -4,11 +4,11 @@ working with them.
 """
 
 import sys
-import analyzer.configurator as cfg
+import analyzer.lib.configurator as cfg
 from copy import deepcopy
-from analyzer.text_splitter import TextSplitter
-from analyzer.methods import (get_indices_incorrect_symbols, leet_transform, factorize, print_results, get_patterns,
-                              delete_duplicates)
+from analyzer.lib.text_splitter import TextSplitter
+from analyzer.lib.methods import (get_indices_incorrect_symbols, leet_transform, factorize, print_results, get_patterns,
+                                  delete_duplicates)
 from nltk.stem import SnowballStemmer
 
 
