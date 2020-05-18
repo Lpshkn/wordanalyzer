@@ -6,19 +6,20 @@ setup(
     name='wordanalyzer',
     version=analyzer.__version__,
     packages=find_packages(),
-    data_files=[('data', ['data/rockyou.txt', 'data/frequency_words.txt'])],
     long_description=open(join(dirname(__file__), 'README.md')).read(),
     author='lpshkn',
     entry_points={
-        'console_scripts': ['wordanalyzer = analyzer.main:main']
+        'console_scripts': ['wordanalyzer = main:main']
     },
     test_suite="tests",
     install_requires=[
-        'pybktree==1.1',
-        'strsim==0.0.3'
+        'pybktree~=1.1',
+        'strsim~=0.0.3',
+        'numpy~=1.18.4',
+        'pyxdameraulevenshtein~=1.6',
+        'nltk~=3.5',
+        'setuptools~=45.2.0'
     ],
-    description="""This program analyzes the source set of words was obtained from the file (-s parameter), 
-    clear this set from incorrect symbols, split cleared words to lexemes, then correct them by replacing assumed 
-    incorrect words to right words and then will create new set of words and save it to the 
-    destination file (-d parameter)."""
+    description="The main goal of this program consists of analyzing a list of words that you can pass to the input. "
+                "This program has 4 modes of working and can work in multiple mode at time."
 )
