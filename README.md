@@ -90,9 +90,15 @@ There are 3 ways to install this program, you can choose any way that suits you:
 3) You can build a docker image:
     * `git clone https://gitlab.com/lpshkn/wordanalyzer.git`
     * `cd wordanalyzer`
-    * `docker build -t wordanalyzer:0.1.0 .`
+    * `docker build -t wordanalyzer:1.0.0 .`
 
 ## How To Use:
+
+*NOTE*: If you use Docker, just run:
+```shell script
+docker run -it wordanalyzer:1.0.0
+```
+Then you may run any commands.
 
 #### Required parameters
 
