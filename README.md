@@ -2,41 +2,51 @@
 
 ## Description
 
-This program analyzes the source set of words was obtained from the file (-s parameter), clear this set 
-from incorrect symbols, split cleared words to lexemes, then correct them by replacing assumed incorrect words 
-to right words and then will create new set of words and save it to the destination file (-d parameter).
+The main goal of this program consists of analyzing a list of words that you can pass to the input. 
+This program has 4 modes of working and can work in multiple mode at time. These modes will be described below:
 
-Also this program provides word clearing (-clr parameter) or returning (-cost parameter) of the total word cost 
-based on word splitting depending on the list of words ordered by usage frequency.
+* **Count** the cost of a word: you can count the cost of each word of the word list. Counting depends on the splitting 
+  a word to the several words and the counting the cost of each part. The cost of a word is a rank of this word 
+  in a frequency words list.
 
-##### Optional arguments:
+* **Clear** a word: you can clear a word from incorrect characters(0-9, !@#$...+=_, space characters etc.).
 
-```-s, --source``` - the source file containing the set of words you need to analyze. By default, it's 
-"wordanalyzer/data/rockyou.txt"
+* **Correct** a word: you can correct a word using the Damerau-Levenshtein distance. You'll need to a frequency word list,
+  because that distance will be calculated depending on this list of words.
+  
+* **Select** the base parts of a word: you can split the word to the several parts and use stemming to convert them. 
+  Thus, you will get the base parts of this word.
 
-```-f, --frequency``` - the dictionary ordered by frequency of word usage, which will be used to perform 
-the splitting text and correcting incorrect words (if the dictionary parameter -w isn't override). By default, it's
-"wordanalyzer/data/frequency_words.txt"
+Of course, you can save all results into the files that you can specify for each mode. If you just use a mode, 
+but don't specify a file, results will be printed in the stdout.
 
-```-d, --destination``` - the destination file where the processed set of source words will be saved. By default, 
-it's "wordanalyzer/new_words.txt"
+## Arguments:
 
-```-c, --count``` - count of words which will be processed (set of words will be selected randomly). That is the count
-that will be loaded from source file (-s parameter). By default, it's whole file.
+```-s, --source``` - the source file containing a set of words you need to analyze. Note, if you specify `-w` option, 
+this option won't be considered, because of the `-w` option has a higher priority.
+
+```-w, --words``` - the input list of words which you need to process. If it's specified, the source file containing 
+a list of words will be ignored.
+
+```-f, --frequency``` - the dictionary ordered by the frequency of word usage, which will be used to perform 
+the splitting text and correcting wrong words. This option is necessary and should be specified.
+
+```-c, --count``` - a number of words which will be processed (a set of words will be selected randomly). That is the count
+that will be loaded from a source file (-s parameter). By default, it's all words.
 
 ```-e, --encoding``` - if your "source" of "frequency" file isn't "utf-8" encoding, you can change this parameter. 
 That value will be passed to the function of loading data and this function will read the file with appropriate
 encoding. By default, it's "utf-8".
 
-```-t, --tree``` - in the process will be built a bk-tree which will help to correct and find similar words to any word.
-This tree is based on words are ordered by frequency usage. This tree can take a long time to build. Therefore, you can
+```-t, --tree``` - in process will be built a bk-tree which will help to correct and find similar words to any word.
+This tree is based on the words ordered by the frequency usage. Building the tree can take some time. Therefore, you can
 save built tree to a file or you can load the tree from the file, if it was saved before. By default, it's None.
 
-```-similar, --similar-words``` - how many similar words will be returned by method of searching similar words. That 
-value must be optimal, because very small values (1-2) specify that a word must be interpreted unambiguously, but it 
+```-similar, --similar-words``` - how many similar words will be returned by the method of searching similar words. That 
+value must be optimal, because very small count of values (1-2) specifies that the word must be interpreted unambiguously, but it 
 isn't reliable. Very big values (>=6) will also produce outliers, in addition to correct words. By default, it's 4.
 
-```-dist, --distance``` - what Damerau's distance will be used to search for similar words. You can set big values, but
+```-dist, --distance``` - what Damerau's distance will be used to search for similar words. You can set a big value, but
 it will promote words very different from the original word. By default, it's 1.
 
 ```-thres, --threshold``` - how many parts will be spliced when processing and searching for a correct word. That is
@@ -45,113 +55,135 @@ the number of parts of a word that will be in turn processed to generate new cor
 ```-n, --number-corrected``` - how many corrected words will be returned after processing and correcting a word. 
 You should keep in mind that one cleared word (without any incorrect symbols) will be added to the new corrected words.
 
-```-cost, --total-cost``` - return summary cost for each word passed to input. If it's specified, another methods
-won't work.
+```-cost, --total-cost``` - one of 4 mode to count the total cost of a word. You can specify it without any file 
+and results will be printed in the stdout. But if you will specify a filename, all results will be saved into this file.
 
-```-clr, --clear-word``` - return cleared words from the incorrect symbols depending on the total sum of the word.
-If it's specified, another methods will not work. This method replaces -sum option.
+```-clr, --clear-word``` - one of 4 modes to clear words. You can specify it without any file and results 
+will be printed in the stdout. But if you will specify a filename, all results will be saved into this file.
 
-```-w, --words``` - input list of words which you need to process. If it's specified, the source list of words will be
-ignored.
+```-correct, --correct``` - one of 4 modes to correct words. You can specify it without any file and results 
+will be printed in the stdout. But if you will specify a filename, all results will be saved into this file.
 
-```-v, --verbose``` - if it specified, the process of correcting words will be printed to stdout.
+```-basic, --base-words``` - one of 4 modes to get the base parts of a word. You can specify it without any file 
+and results will be printed in the stdout. But if you will specify a filename, all results will be saved into this file.
+
+```-v, --verbose``` - if it specified, the process of analyzing words will be more detailed. 
 
 ## Installation
-1) You can install it to your host machine like:
+There are 3 ways to install this program, you can choose any way that suits you:
+
+1) You can clone this repository and just run the main.py module:
     * `git clone https://gitlab.com/lpshkn/wordanalyzer.git`
     * `cd wordanalyzer`
-    * run tests - `python3 setup.py test`
-    * setup - `sudo python3 setup.py install`
+    * `python3 main.py [OPTIONS]`
+2) You can install it to your host machine:
+    * `git clone https://gitlab.com/lpshkn/wordanalyzer.git`
+    * `cd wordanalyzer`
+    * `sudo python3 setup.py install`
+    * `wordanalyzer [OPTIONS]`
 
-2) You can build a docker image:
+3) You can build a docker image:
     * `git clone https://gitlab.com/lpshkn/wordanalyzer.git`
     * `cd wordanalyzer`
     * `docker build -t wordanalyzer:0.1.0 .`
 
-## Guidance for first use
+## How To Use:
 
-After you installed it (either build a docker or install it on the host machine), just launch it by next command:
+#### Required parameters
+
+To use this program, you need to know, that there are some necessary options. Therefore, the next rules help you:
+1) At first, you need to specify a list of words that you want process. You may do it using `-s` option to specify 
+   a file where the list is or using `-w` option to specify space-separated words directly in the command line. As like:
+   `-s source.txt` or `-w word1 word2 ... wordN`
+   
+2) At second, you must specify a frequency dictionary (list of words ordered by frequency usage) using `-f` parameter:
+   `-f frequency.txt`
+   
+3) At third, you must choose a mode that you want use. All modes were described above. You can use several modes at time.
+   Note, that you can save results of each mode in an individual file or even one file. If you specify only mode without
+   any file, results will be printed in stdout. 
+   
+   For example:  
+   `-clr file.txt -correct file.txt -basic -cost` - this saves results of clearing and correcting words into the file.txt, 
+   results of selecting the base parts and counting the cost will be printed in stdout
+   
+   *NOTE*: you can specify a filename as "STDOUT" and results will be printed in stdout:  
+   `-clr file.txt -correct file.txt -basic STDOUT -cost STDOUT`
+   
+So, the usage of this program is extremely easy using the next formula:
 ```shell script
-wordanalyzer -t data/bk_tree.pickle -c 300 -v -d corrected_words.txt
-```
-That command runs the process of correcting 300 words from the rockyou.txt, prints the result of correcting an each word
- in real time and saves the results into file "corrected_words.txt" in the same directory. 
- 
- If you need to control the process of correcting words, just look at the console, where results will be printed.
-
-## Usage
-
-```shell script
-wordanalyzer [-s <source_file>] [-d <destination_file>] [-c <count>] [-e <encoding>] [-t <tree>] [-similar <number>]
-[-dist <distance>] [-thres <threshold>] [-n <number>] [-cost] [-clr] [-w <words>] [-v]
-```
-
-If you built the docker image, you can run it:
-
-```shell script
-docker run -it wordanalyzer:0.1.0
-```
-
-All data files are in /data directory. To try it out, just input:
-
-```shell script
-wordanalyzer -t data/bk_tree.pickle -c 300 -v -d new_words.txt
+wordanalyzer -w words/-s filename -f frequency_file -clr/-cost/-correct/-basic [file]
 ```
 
-You can pass to this program a list of words which you need to process using a -w parameter. 
-Note, that this option replaces a file containing a list of words passed to the input (-s parameter):
+#### Optional parameters
+
+To get more appropriate results for your purpose, you can configure processing as you wish. 
+For this there are some optional parameters.
+
+1) Suppose, you have a very large list of words and you need process some sample of it. You may use `-c` parameter:
+   `-c 300` - this processes a list of 300 words which will be selected randomly of your list.
+   
+2) Maybe your file has incorrect encoding and can't be processed. You may specify an encoding using `-e` parameter.  
+   For example: `-e "utf-8"`.
+
+3) Suppose, you aren't satisfied by results. You can try to configure the process using configuration values: 
+   `-similar`, `-dist`, `-thres`, `-n`. Just try to pass them different values and check results.  
+   For example: `-similar 3 -dist 4 -thres 2 -n 5`
+   
+4) To decrease the preparatory time you can save a bk-tree that will be built when program starts, using `-t` parameter. 
+   In next time, this tree will be loaded from the file, if you specify `-t` again.  
+   For example: `-t tree.pickle`
+   
+5) If you need more detailed report of processing you may specify `-v` parameter. So, when processing you will get 
+   a text in the files that you specified for modes or in the stdout.  
+   
+   For example, if you specify `-clr file.txt -correct file.txt -cost file.txt -basic -v`, you will get the next text: 
+   `word: ***, cost: ***, cleared word: ***, corrected word: ***` - in the file and `word: ***, base words: ***` in the stdout.
+
+## Just try it!
+To realize it, just run one of these command:
 
 ```shell script
-wordanalyzer -t data/bk_tree.pickle -w ex4mpl3 th1515mypa55word -v
+wordanalyzer -s ./data/short_rockyou.txt -f ./data/frequency_words.txt -c 300 -clr clear.txt -cost clear.txt -correct -basic -v
 ```
 
-If you want to get total word cost, you can use -cost parameter. This method doesn't save results to a file:
 ```shell script
-wordanalyzer -t data/bk_tree.pickle -w ex4mpl3 th1515mypa55word -cost
-``` 
-
-If you want to get cleared words, you can use -clr parameter. This method doesnt' save results to a file:
-```shell script
-wordanalyzer -t data/bk_tree.pickle -w ex4mpl3 -clr
+wordanalyzer -w 5437h15m66yp4555w0rd654 -f ./data/frequency_words.txt -correct -v
 ```
 
 ## Testing:
-
-
 ##### Coverage
 ```
-Name                            Stmts   Miss  Cover
----------------------------------------------------
-analyzer/__init__.py                1      0   100%
-analyzer/arguments_parser.py       21      0   100%
-analyzer/load_data.py              16      0   100%
-analyzer/methods.py                25      0   100%
-analyzer/text_splitter.py          28      0   100%
-analyzer/word_analyzer.py         124     21    83%
-pybktree.py                        62     14    77%
-strsim/__init__.py                  1      0   100%
-similarity/damerau.py              34      1    97%
-similarity/string_distance.py       9      3    67%
----------------------------------------------------
-TOTAL                             321     39    88%
+Name                        Stmts   Miss  Cover 
+-----------------------------------------------
+analyzer/__init__.py            1      0   100%
+analyzer/bk_tree.py            42      0   100%
+analyzer/configurator.py      129     19    85%   
+analyzer/load_data.py          20      0   100%
+analyzer/methods.py            85      4    95%   
+analyzer/text_splitter.py      28      0   100%
+analyzer/word_analyzer.py     166     62    63% 
+-----------------------------------------------
+TOTAL                         471     85    82%
 ```
 
 ## Examples:
 
 * Let's assume that the source file is `rockyou.txt`, file with frequency words is `frequency_words.txt`. So we want to
-analyze just 300 words of all list and save the result to `new_words.txt`. Meanwhile, we'll build and save a bk-tree to
-`bk_tree.pickle`. Then it will seem like:
+clear, correct and count cost of just 300 words of all list and save the result to `new_words.txt`. 
+Meanwhile, we'll build and save a bk-tree to `bk_tree.pickle`. Also, we want see more detailed information. 
+Then it will seem like:
 
   ```shell script
-  wordanalyzer -s rockyou.txt -d new_words.txt -f frequency_words.txt -t bk_tree.pickle -c 300
+  wordanalyzer -s rockyou.txt -f frequency_words.txt -t bk_tree.pickle -c 300 -clear new_words.txt \
+  -correct new_words.txt -cost new_words.txt -v
   ```
-  
-  If you want to see the process, append `-v`
-  
-* You can load all words from `rockyou.txt`, just don't specify `-c` parameter. Suppose now, that you aren't satisfied
-with the last result. You can try change any different values of `-similar`, `-dist`, `-thres`, `-n`, but it can 
-both improve the result and decrease it. Absolutely, very big values promote to increase work time.
-
+    
+   You can load all words from `rockyou.txt`, just don't specify `-c` parameter.
+   
+* Suppose now, that you want get only a list of corrected words, just write:
   ```shell script
-  wordanalyzer -t bk_tree.pickle -similar 6 -dist 2 -thres 3 -n 5
+  wordanalyzer -s rockyou.txt -f frequency_words.txt -t bk_tree.pickle -correct output.txt
   ```
+  
+  This way works with any mode.
