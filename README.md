@@ -70,6 +70,11 @@ and results will be printed in the stdout. But if you will specify a filename, a
 ```-v, --verbose``` - if it specified, the process of analyzing words will be more detailed. 
 
 ## Installation
+Before installing, you should install the requirements (it you don't use docker or setup.py):  
+```shell script
+pip3 install -r requirements.txt
+```
+  
 There are 3 ways to install this program, you can choose any way that suits you:
 
 1) You can clone this repository and just run the main.py module:
@@ -148,7 +153,7 @@ wordanalyzer -s ./data/short_rockyou.txt -f ./data/frequency_words.txt -c 300 -c
 ```
 
 ```shell script
-wordanalyzer -w 5437h15m66yp4555w0rd654 -f ./data/frequency_words.txt -correct -v
+wordanalyzer -w 7h15myp4555w0rd754 -f ./data/frequency_words.txt -correct -v
 ```
 
 ## Testing:

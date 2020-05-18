@@ -9,7 +9,7 @@ setup(
     long_description=open(join(dirname(__file__), 'README.md')).read(),
     author='lpshkn',
     entry_points={
-        'console_scripts': ['wordanalyzer = main:main']
+        'console_scripts': ['wordanalyzer = analyzer.main:main']
     },
     test_suite="tests",
     install_requires=[
