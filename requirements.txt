@@ -1,5 +1,6 @@
 pybktree~=1.1
 strsim~=0.0.3
+numpy~=1.18.4
 pyxdameraulevenshtein~=1.6
 nltk~=3.5
 setuptools~=45.2.0
