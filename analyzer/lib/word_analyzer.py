@@ -38,10 +38,11 @@ class WordAnalyzer:
         # How many words will be returned by get_correct_words method
         analyzer.number_of_corrected_words = configurator.get_configuration_values()['number_corrected']
 
+        analyzer.max_len = max(len(x) for x in analyzer.words)
         # Define dictionary with values like (number: list_of_divisors).
         # There are defined all numbers from 1 to max length of all words.
         # It's necessary to improve efficiency, because divisors won't calculated again for same number
-        analyzer.divisors = dict((number, factorize(number)) for number in range(1, analyzer.splitter.max_len + 1))
+        analyzer.divisors = dict((number, factorize(number)) for number in range(1, analyzer.max_len + 1))
 
         return analyzer
 
@@ -106,8 +107,8 @@ class WordAnalyzer:
                 print_results(word, pattern, args, file, verbose)
 
         for filename, file in files.items():
-            file.close()
             if filename != "STDOUT":
+                file.close()
                 delete_duplicates(filename)
 
     def _get_total_cost(self, text: str) -> int:
@@ -192,7 +193,9 @@ class WordAnalyzer:
             return None
 
         # Get list of divisors for word's length
-        divisors = self.divisors[len(word)]
+        divisors = self.divisors.get(len(word))
+        if not divisors:
+            return None
 
         # Split the word to the number of parts determined by the divisor. If the part is repeated,
         # then all next parts equal it.
