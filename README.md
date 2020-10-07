@@ -1,5 +1,11 @@
 # Word analyzer
 
+## Abstract
+
+That program can this:  
+
+7h15myp4555w0rd754 -> this my password  
+
 ## Description
 
 The main goal of this program consists of analyzing a list of words that you can pass to the input. 
